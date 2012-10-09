@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
+<head>
+<title>演習問題と解答(08) - 乃村研Haskell勉強会2012</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="title" content="演習問題と解答(08) - 乃村研Haskell勉強会2012"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2012-06-25"/>
+<meta name="author" content="乃村 能成"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  div.inlinetask {
+    padding:10px;
+    border:2px solid gray;
+    margin:10px;
+    background: #ffffcc;
+  }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style><style type="text/css">
+<!--/*--><![CDATA[/*><!--*/
+html {
+    font-family:'ヒラギノ丸ゴ Pro','Hiragino Maru Gothic Pro','メイリオ',Meiryo,'ＭＳ Ｐゴシック',sans-serif;
+    font-size: 12pt;
+}
+pre {
+    border: 1pt solid #AEBDCC;
+    background-color: #F3F5F7;
+    padding: 5pt;
+    font-family: courier, monospace;
+    font-size: 90%;
+    overflow:auto;
+}
+table, th, td {
+    border: 1px #000000 solid;
+    border-collapse: collapse;
+}
+
+td, th {
+    vertical-align: top;
+}
+
+dt {
+    font-weight: bold;
+    color: green;
+}
+
+div.figure {
+    padding: 0.5em;
+}
+
+div.figure p {
+    text-align: center;
+}
+
+.linenr {
+    font-size: smaller;
+}
+
+.code-highlighted {
+    background-color:#ffff00;
+}
+
+/* my settings */
+
+body {
+    color: black;
+    // background: #d1eeee;
+    color: black;
+    line-height: 1.5;
+    margin-top: 50px;
+    margin-right: 10%;
+    margin-left: 1em;
+    letter-spacing: 2px;
+}
+
+h1 {
+    text-align: center;
+}
+
+pre {
+    padding: 10px 10px 10px 10px;
+    margin: 0px 0px 0px 1em;
+    letter-spacing: 0px;
+    line-height: 1;
+}
+
+h2 {
+    margin-bottom: 2em;
+    border: solid;
+    padding: 0px 10px 2px 10px;
+    border-width: 0px 0px 3px 0.7em;
+    border-color: transparent transparent black black;
+}
+
+h3 {
+    margin-bottom: 2em;
+    border: solid;
+    padding: 0px 10px 2px 10px;
+    border-width: 0px 0px 1px 0.7em;
+    border-color: transparent transparent brown brown;
+}
+
+h4 {
+    border: solid;
+    padding: 0px 10px 2px 10px;
+    border-width: 0px 0px 1px 0.7em;
+    border-color: blue;
+}
+
+h5 {
+    border: solid;
+    padding: 0px 10px 2px 10px;
+    border-width: 0px 0px 1px 0.7em;
+    border-color: green;
+    color: green;
+}
+
+th {
+    font-weight: bold;
+    border: 1px solid #777777;
+    background-color: #8899FF;
+    padding: 3px;
+    border-bottom: 0px;
+    border-right: 0px;
+}
+
+td {
+    border-top: 1px solid #777777;
+    padding: 3px;
+}
+
+tr {
+    background-color: aliceblue;
+}
+
+table {
+    border-spacing: 0px;
+    empty-cells:show;
+    margin-bottom: 6px;
+    border: 1px solid #0000AA;
+    border-top: 0px;
+}
+
+table.layer {
+    text-align: center;
+}
+
+blockquote {
+    border: 1pt solid #AEBDCC;
+    background-color: #F3F5F7;
+    padding: 0px 0px 0px 1em;
+}
+
+td.byteorder {
+    text-align: center;
+}
+
+em {
+    color: red;
+}
+
+b {
+    color: green;
+}
+
+img {
+    border: 1pt solid #AEBDCC;
+    background-color: #F3F5F7;
+}
+
+/* postamble */
+div#postamble {
+    width: 100%;
+    text-align: right;
+    font-size: smaller;
+    border-top: 2px solid #808080;
+    margin-top: 3em;
+    padding: 1em 0em;
+}
+div#postamble p {
+    margin: 0.2em 0em;
+}
+p.creator {
+    color: #a0a0a0;
+}
+/*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="pub/css/text.css">
+
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">演習問題と解答(08) - 乃村研Haskell勉強会2012</h1>
+
+
+<div id="table-of-contents">
+<h2>目次</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">演習問題と解答(08)</a>
+<ul>
+<li><a href="#sec-1-1">出題範囲</a></li>
+<li><a href="#sec-1-2">問題</a>
+<ul>
+<li><a href="#sec-1-2-1">問題1</a></li>
+<li><a href="#sec-1-2-2">問題2</a></li>
+<li><a href="#sec-1-2-3">問題3</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-3">解答例</a>
+<ul>
+<li><a href="#sec-1-3-1">解答1</a></li>
+<li><a href="#sec-1-3-2">解答2</a></li>
+<li><a href="#sec-1-3-3">解答3</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1">演習問題と解答(08)</h2>
+<div class="outline-text-2" id="text-1">
+
+
+</div>
+
+<div id="outline-container-1-1" class="outline-3">
+<h3 id="sec-1-1">出題範囲</h3>
+<div class="outline-text-3" id="text-1-1">
+
+<ul>
+<li>08章 A yes-no typeclass から
+</li>
+<li>09章 Hello, world! まで
+</li>
+</ul>
+
+
+<p>
+    <a href="t08-08-09-nom.html">輪講資料</a>へ
+</p></div>
+
+</div>
+
+<div id="outline-container-1-2" class="outline-3">
+<h3 id="sec-1-2">問題</h3>
+<div class="outline-text-3" id="text-1-2">
+
+
+</div>
+
+<div id="outline-container-1-2-1" class="outline-4">
+<h4 id="sec-1-2-1">問題1</h4>
+<div class="outline-text-4" id="text-1-2-1">
+
+<p>      <code>YesNo</code> 型クラスにおいて，リストの <code>No</code> は，空の場合でしたが，
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">class</span> <span style="color: #228b22;">YesNo</span> a <span style="color: #7f007f;">where</span>
+  yesno <span style="color: #a0522d;">::</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+
+<span style="color: #7f007f;">instance</span> <span style="color: #228b22;">YesNo</span> [a] <span style="color: #7f007f;">where</span>
+  yesno <span style="color: #228b22;">[]</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">False</span>
+  yesno <span style="color: #7f007f;">_</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+</pre>
+
+<p>
+      これを変更して，空リストのリストも <code>No</code> となるようにしなさい．
+</p>
+<p>
+      実行例:
+</p>
+
+
+<pre class="example">ghci&gt; yesno [[],[]]
+Fasle
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1-2-2" class="outline-4">
+<h4 id="sec-1-2-2">問題2</h4>
+<div class="outline-text-4" id="text-1-2-2">
+
+<p>      どういうわけで <code>Map k</code> が <code>Functor</code> の一員になるのかについて説明しなさい．
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-1-2-3" class="outline-4">
+<h4 id="sec-1-2-3">問題3</h4>
+<div class="outline-text-4" id="text-1-2-3">
+
+<p>      <code>do</code> の中に I/O を書くことで，何故安全に副作用のある関数とそうでない関数を分離できるのか．
+      例えば，純粋な関数が戻り値を返す前に結果を画面に表示してみたい場合を考えてみよ．
+</p>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-1-3" class="outline-3">
+<h3 id="sec-1-3">解答例</h3>
+<div class="outline-text-3" id="text-1-3">
+
+
+</div>
+
+<div id="outline-container-1-3-1" class="outline-4">
+<h4 id="sec-1-3-1">解答1</h4>
+<div class="outline-text-4" id="text-1-3-1">
+
+
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">class</span> <span style="color: #228b22;">YesNo</span> a <span style="color: #7f007f;">where</span>
+  yesno <span style="color: #a0522d;">::</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+
+<span style="color: #7f007f;">instance</span> <span style="color: #228b22;">YesNo</span> <span style="color: #228b22;">Int</span> <span style="color: #7f007f;">where</span>
+  yesno 0 <span style="color: #a0522d;">=</span> <span style="color: #228b22;">False</span>
+  yesno <span style="color: #7f007f;">_</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+
+<span style="color: #7f007f;">instance</span> <span style="color: #228b22;">YesNo</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">YesNo</span> [a] <span style="color: #7f007f;">where</span>
+  yesno <span style="color: #228b22;">[]</span>     <span style="color: #a0522d;">=</span> <span style="color: #228b22;">False</span>
+  yesno (x<span style="color: #228b22;">:</span>xs) <span style="color: #a0522d;">=</span> (yesno x) <span style="color: #a0522d;">||</span> (yesno xs)
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>      
+  print <span style="color: #a0522d;">$</span> yesno [<span style="color: #228b22;">[]</span> <span style="color: #a0522d;">::</span> [<span style="color: #228b22;">Int</span>], <span style="color: #228b22;">[]</span>]
+  print <span style="color: #a0522d;">$</span> yesno [1 <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span>]
+</pre>
+
+
+<p>
+      実行結果:
+</p><pre class="example">
+False
+True
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1-3-2" class="outline-4">
+<h4 id="sec-1-3-2">解答2</h4>
+<div class="outline-text-4" id="text-1-3-2">
+
+<p>      Functor になるためには，fmap が必要．
+      Data.Map のソースコードを読むと， <a href="file:////Library/Haskell/doc/ghc-doc/libraries/containers-0.4.0.0/src/Data-Map.html#map">Data/Map.hs の map</a>
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">instance</span> <span style="color: #228b22;">Functor</span> (<span style="color: #228b22;">Map</span> k) <span style="color: #7f007f;">where</span>
+<span style="color: #0000ff;">fmap</span> f m  <span style="color: #a0522d;">=</span> map f m
+
+<span style="color: #0000ff;">map</span> <span style="color: #a0522d;">::</span> (a <span style="color: #a0522d;">-&gt;</span> b) <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Map</span> k a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Map</span> k b
+<span style="color: #0000ff;">map</span> f <span style="color: #a0522d;">=</span> mapWithKey (<span style="color: #a0522d;">\</span><span style="color: #7f007f;">_</span> x <span style="color: #a0522d;">-&gt;</span> f x)
+
+<span style="color: #0000ff;">mapWithKey</span> <span style="color: #a0522d;">::</span> (k <span style="color: #a0522d;">-&gt;</span> a <span style="color: #a0522d;">-&gt;</span> b) <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Map</span> k a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Map</span> k b
+<span style="color: #0000ff;">mapWithKey</span> f <span style="color: #a0522d;">=</span> go
+  <span style="color: #7f007f;">where</span>
+    go <span style="color: #228b22;">Tip</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Tip</span>
+    go (<span style="color: #228b22;">Bin</span> sx kx x l r) <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Bin</span> sx kx (f kx x) (go l) (go r)
+</pre>
+
+<p>
+      つまり，全ての value に関数を適用して置き換える fmap が定義されている．
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-1-3-3" class="outline-4">
+<h4 id="sec-1-3-3">解答3</h4>
+<div class="outline-text-4" id="text-1-3-3">
+
+<p>      以下のようにprintfデバッグをすることも可能であるが，
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">import</span> <span style="color: #228b22;">Data.Char</span>
+<span style="color: #7f007f;">import</span> <span style="color: #228b22;">Text.Printf</span>
+
+<span style="color: #0000ff;">readInt</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">readInt</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span> 
+  str <span style="color: #a0522d;">&lt;-</span> getLine
+  <span style="color: #7f007f;">let</span> num <span style="color: #a0522d;">=</span> read (findDigit str) <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span>
+  printf <span style="color: #8b2252;">"readInt: %d\n"</span> num
+  return num
+  <span style="color: #7f007f;">where</span> findDigit <span style="color: #a0522d;">=</span> filter isDigit
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+  n <span style="color: #a0522d;">&lt;-</span> readInt
+  print n
+</pre>
+
+<p>
+      Haskell では，関数は1つの式なので，
+</p><ol>
+<li>式全体が1つの型を持つので先頭に do を置く以外 IO できない．
+</li>
+<li>つまり，純粋関数の途中に do を混ぜられない．
+</li>
+<li>do (IO) を使った時点でその関数の型に IO が付く．
+</li>
+</ol>
+
+<p>      この原理で，IO と純粋関数が分離できる．
+</p>
+<p>
+      上記例のように，全部に IO を付ければ，
+      普通の手続き型っぽく同じことが書けるが，
+      副作用のある関数が多くなるのは望ましくない．
+</p>
+<p>      
+      Haskell の場合は，関数から ``IO''
+      をできるだけ減らすということが目に見えるので，より安全になる．
+</p>
+
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">import</span> <span style="color: #228b22;">Data.Char</span>
+<span style="color: #7f007f;">import</span> <span style="color: #228b22;">Text.Printf</span>
+
+<span style="color: #0000ff;">readInt</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">readInt</span> str <span style="color: #a0522d;">=</span> read (findDigit str) <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span>
+  <span style="color: #7f007f;">where</span> findDigit <span style="color: #a0522d;">=</span> filter isDigit
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+  n <span style="color: #a0522d;">&lt;-</span> getLine
+  <span style="color: #7f007f;">let</span> num <span style="color: #a0522d;">=</span> readInt n
+  printf <span style="color: #8b2252;">"readInt: %d\n"</span> num
+  print <span style="color: #a0522d;">$</span> num
+</pre>
+
+
+<p>
+      のように，IO を局所化することが大事だと目で見て分かる．
+</p></div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2012-06-25</p>
+<p class="author">Author: 乃村 能成</p>
+<p class="creator"><a href="http://orgmode.org">Org</a> version 7.8.11 with <a href="http://www.gnu.org/software/emacs/">Emacs</a> version 24</p>
+
+
+</div>
+</body>
+</html>

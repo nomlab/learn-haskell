@@ -1,0 +1,49 @@
+#+TITLE:     Index - 乃村研Haskell勉強会2012
+#+AUTHOR:    nomlab
+#+EMAIL:     nomlab@swlab.cs.okayama-u.ac.jp
+#+DATE:      2012-10-09
+#+SETUPFILE: options/default.org
+#+OPTIONS: toc:nil
+
+* 輪講資料と演習問題一覧
+  | No. | 範囲(開始)                              | 範囲(終了)                   | 担当者 | リンク             |
+  |-----+-----------------------------------------+------------------------------+--------+--------------------|
+  |   1 | 01章 About this tutorial                | 02章 Texas ranges            | 村田   | [[file:t01-01-02-murata.org][輪講資料]]  [[file:p01-01-02-murata.org][演習問題]] |
+  |   2 | 02章 I'm a list comprehension           | 04章 Pattern matching        | 吉井   | [[file:t02-02-04-yoshii.org][輪講資料]]  [[file:p02-02-04-yoshii.org][演習問題]] |
+  |   3 | 04章 Guards, guards!                    | 05章 Thinking recursively    | 葛迫   | [[file:t03-04-05-katsurazako.org][輪講資料]]  [[file:p03-04-05-katsurazako.org][演習問題]] |
+  |   4 | 06章 Curried functions                  | 06章 Only folds and horses   | 木村   | [[file:t04-06-06-kimura-y.org][輪講資料]]  [[file:p04-06-06-kimura-y.org][演習問題]] |
+  |   5 | 06章 Function application with $        | 07章 Data.Char               | 北川   | [[file:t05-06-07-kitagawa.org][輪講資料]]  [[file:p05-06-07-kitagawa.org][演習問題]] |
+  |   6 | 07章 Data.Map                           | 08章 Type parameters         | 池田   | [[file:t06-07-08-ikeda-n.org][輪講資料]]  [[file:p06-07-08-ikeda-n.org][演習問題]] |
+  |   7 | 08章 Derived instances                  | 08章 Typeclasses 102         | 檀上   | [[file:t07-08-08-danjo-m.org][輪講資料]]  [[file:p07-08-08-danjo-m.org][演習問題]] |
+  |   8 | 08章 A yes-no typeclass                 | 09章 Hello, world!           | 乃村   | [[file:t08-08-09-nom.org][輪講資料]]  [[file:p08-08-09-nom.org][演習問題]] |
+  |   9 | 09章 Files and streams                  | -                            | 村田   | [[file:t09-09-09-murata.org][輪講資料]]  [[file:p09-09-09-murata.org][演習問題]] |
+  |  10 | 09章 Command line arguments             | 09章 Exceptions              | 吉井   | [[file:t10-09-09-yoshii.org][輪講資料]]  [[file:p10-09-09-yoshii.org][演習問題]] |
+  |  11 | 10章 Reverse Polish notation calculator | 11章 Functors redux          | 葛迫   | [[file:t11-10-11-katsurazako.org][輪講資料]]  [[file:p11-10-11-katsurazako.org][演習問題]] |
+  |  12 | 11章 Applicative functors               | 11章 The newtype keyword     | 木村   | [[file:t12-11-11-kimura-y.org][輪講資料]]  [[file:p12-11-11-kimura-y.org][演習問題]] |
+  |  13 | 11章 Monoids                            | -                            | 北川   | [[file:t13-11-11-kitagawa.org][輪講資料]]  [[file:p13-11-11-kitagawa.org][演習問題]] |
+  |  14 | 12章 Getting our feet wet with Maybe    | 12章 Walk the line           | 池田   | [[file:t14-12-12-ikeda-n.org][輪講資料]]  [[file:p14-12-12-ikeda-n.org][演習問題]] |
+  |  15 | 12章 do notation                        | 12章 Monad laws              | 檀上   | [[file:t15-12-12-danjo-m.org][輪講資料]]  [[file:p15-12-12-danjo-m.org][演習問題]] |
+  |  16 | 13章 Writer? I hardly know her!         | 13章 Error error on the wall | 乃村   | [[file:t16-13-13-nom.org][輪講資料]]  [[file:p16-13-13-nom.org][演習問題]] |
+  |  17 | 13章 Some useful monadic functions      | 13章 Making monads           | 仲尾   | [[file:t17-13-13-nakao.org][輪講資料]]  [[file:p17-13-13-nakao.org][演習問題]] |
+  |  18 | 14章 Taking a walk                      | 14章 Watch your step         | 深井   | [[file:t18-14-14-fukai.org][輪講資料]]  [[file:p18-14-14-fukai.org][演習問題]] |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

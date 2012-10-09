@@ -1,0 +1,914 @@
+#+TITLE:     輪講資料(16) - 乃村研Haskell勉強会2012
+#+AUTHOR:    乃村 能成
+#+EMAIL:     nom@cs.okayama-u.ac.jp
+#+DATE:      2012-06-25
+#+SETUPFILE: options/default.org
+
+*  Learn You a Haskell for Great Good!
+*** [[http://learnyouahaskell.com/for-a-few-monads-more][13.]] For a Few Monads More
+    これまで，モナドが文脈を持つ値をどのように扱い，関数にどう適用されるかについて説明し，
+    =>>== や =do= 表記を使うことで，文脈の面倒を任せて値そのものに集中できることを見てきました．
+    
+    =Maybe= は，失敗するかもしれないという文脈を表し，
+    リストは，非決定的な値を表現していました．
+    =IO= は，モナドが何かを知る前に勉強しました．
+
+    本章では，あといくつかのモナドについて勉強していきます．
+    モナドに関しては， =mtl= パッケージ内を探検していきます．
+    =mtl= が入っているか =ghc-pkg list= で確認できます．
+
+***** Writer? I hardly know her!
+      [[http://learnyouahaskell.com/for-a-few-monads-more#writer][(http://learnyouahaskell.com/for-a-few-monads-more#writer)]]
+
+      =Writer= モナドは，本来の値以外に何らかのログっぽい値をくっつけておくのに使います．
+      計算の結果を得るのと同時にその過程に関する情報をくっつけておいて，
+      後から取り出したりできるのです．デバッグとかに使いますよね．
+
+      ここでは，ギャング集団に所属するならず者を数えて，
+      その数に応じて集団が大きいかどうか判定する関数を作りましょう．
+      #+BEGIN_SRC haskell
+        isBigGang :: Int -> Bool
+        isBigGang x = x > 9
+      #+END_SRC
+      ここでは， =True/False= を返すだけでなく，付随情報を返すようにしましょう．
+      #+BEGIN_SRC haskell
+        isBigGang :: Int -> (Bool, String)
+        isBigGang x = (x > 9, "Compared gang size to 9.")
+      #+END_SRC
+      #+BEGIN_SRC haskell
+        ghci> isBigGang 3
+        (False,"Compared gang size to 9.")
+        ghci> isBigGang 30
+        (True,"Compared gang size to 9.")      
+      #+END_SRC
+      うまくいってます． =3= とかじゃなくて，はじめから注釈の付いている値
+      =(3, "Smallish gang.")= をもう一度 =isBigGang= に与えた場合は，どうでしょう?
+      いつかの疑問がよみがえります:
+      ノーマルな値を引数に取って，文脈を持つ値を返す関数 (=isBigGang=) があった場合，
+      その関数の引数として文脈を持つ値を与えて関数適用できるでしょうか．
+
+      =Maybe= モナドを勉強したときに
+      =applyMaybe= を作りました． =Maybe a= 型の値を
+      =a -> Maybe b= 型の関数に適用する方法です．
+      後に =>>== として定義しました．これによって， =Nothing= か =Just= かを判定するので，
+      普通の値のように使うことができました．
+
+      同じ感じで， 
+      =(a,String)= を引数に =a -> (b,String)= を関数として扱えるようにしましょう．
+      =applyLog= とします．失敗を扱うのではなく，全ログを残すので，
+      値を連結して保存していく必要があります:
+      #+BEGIN_SRC haskell
+        applyLog :: (a,String) -> (a -> (b,String)) -> (b,String)
+        applyLog (x,log) f = let (y,newLog) = f x in (y,log ++ newLog)
+      #+END_SRC
+      =Maybe= のとき同様に扱うべき値を取り出すのは簡単です．値とログがペアになっているので，
+      一方の値 (=x=) をそのまま取り出して， =f= に適用し， =(y,newLog)= を得ます．
+      =y= は，新しい結果で， =newLog= はログです．これをそのまま返すと古いログが消失するので，
+      =log= と連結して返します． =++= を連結に使っています．
+      実行すると:
+      #+BEGIN_SRC haskell
+        ghci> (3, "Smallish gang.") `applyLog` isBigGang
+        (False,"Smallish gang.Compared gang size to 9")
+        ghci> (30, "A freaking platoon.") `applyLog` isBigGang
+        (True,"A freaking platoon.Compared gang size to 9")
+      #+END_SRC
+      さらに (☆は行が連結している):
+      #+BEGIN_SRC haskell
+        ghci> ("Tobin","Got outlaw name.") `applyLog` ☆
+                   (\x -> (length x, "Applied length."))
+        (5,"Got outlaw name.Applied length.")
+        ghci> ("Bathcat","Got outlaw name.") `applyLog` ☆
+                   (\x -> (length x, "Applied length"))
+        (7,"Got outlaw name.Applied length")
+      #+END_SRC
+
+      この時点で， =applyLog= は， =(a, String)= を引数として取りますが，ログは =String= である必要はあるのでしょうか?
+      =++= でログをつなげているので，何らかのリストであれば，いい筈です．こう:
+      #+BEGIN_SRC haskell
+        applyLog :: (a,[c]) -> (a -> (b,[c])) -> (b,[c])
+      #+END_SRC
+      これと同じことは， bytestring についてもできる気がしますが，
+      bytestring は，リストではないので，現状では，無理です．
+      では， bytestring 用に =applyLog= が必要?
+      いや，待てよ， bytestring もモノイドなので，どちらも =mappend= が使える筈です．
+      #+BEGIN_SRC haskell
+        ghci> [1,2,3] `mappend` [4,5,6]
+        [1,2,3,4,5,6]
+        ghci> B.pack [99,104,105] `mappend` B.pack [104,117,97,104,117,97]
+        Chunk "chi" (Chunk "huahua" Empty)
+      #+END_SRC
+      クール!! これで，モノイドなら =applyLog= できるようになりました．
+      実装の方も変えましょう:
+      #+BEGIN_SRC haskell
+        applyLog :: (Monoid m) => (a,m) -> (a -> (b,m)) -> (b,m)
+        applyLog (x,log) f = let (y,newLog) = f x in (y,log `mappend` newLog)
+      #+END_SRC
+
+      付随するデータがモノイドであればいいので，値とログの組とかではなく，
+      値とモノイドの付属物と考えられます．
+      例えば， 商品の名前とその価格を組にしたタプルを考えてみます．
+      価格には，=Sum= 型を新しく定義し合計が取れるようにしましょう．
+      以下は，選択したフードメニューにドリンクを付ける様子です:
+      #+BEGIN_SRC haskell
+        import Data.Monoid
+        
+        type Food = String
+        type Price = Sum Int
+        
+        addDrink :: Food -> (Food,Price)
+        addDrink "beans" = ("milk", Sum 25)
+        addDrink "jerky" = ("whiskey", Sum 99)
+        addDrink _ = ("beer", Sum 30)
+      #+END_SRC
+      (訳注: Sum は，
+      [[http://learnyouahaskell.com/functors-applicative-functors-and-monoids#monoids][Monoids]] の Product and Sum を復習してください．)
+      思い出す助けを以下に:
+      #+BEGIN_SRC haskell
+        ghci> Sum 3 `mappend` Sum 9
+        Sum {getSum = 12}      
+      #+END_SRC
+      =addDrink= はシンプルで，beans には milk を，jerky には whiskey を
+      その価格を添えて返すだけです．
+      これを =applyLog= と共に使うと有益です．
+      #+BEGIN_SRC haskell
+        ghci> ("beans", Sum 10) `applyLog` addDrink
+        ("milk",Sum {getSum = 35})
+        ghci> ("jerky", Sum 25) `applyLog` addDrink
+        ("whiskey",Sum {getSum = 124})
+        ghci> ("dogmeat", Sum 5) `applyLog` addDrink
+        ("beer",Sum {getSum = 35})
+      #+END_SRC
+      milk は 25セントだったので，beans の 10セントに加算されて，
+      35セントの =Sum= が付いています．これを見ると
+      log 以外のもの(数) に =applyLog= 適用できて，合計を保存できています．
+      モノイドなら何でもよくて，
+      各モノイドにおける結合がどのように実現されているかによって，
+      異なる結果 (文字列の連結だったり合計だったり)が得られるのです．
+
+      =addDrink= は =(Food,Price)= なるタプルを返すので，
+      それを更に =addDrink= に適用可能です:
+      #+BEGIN_SRC haskell
+        ghci> ("dogmeat", Sum 5) `applyLog` addDrink `applyLog` addDrink
+        ("beer",Sum {getSum = 65})
+      #+END_SRC
+      dogmeat に対して beer  (30セント) が 3回選ばれて 65セントになっています．
+
+      ここで，モノイドがくっ付いた値は，モナドと同じように振舞うことがわかりました．
+      (訳注: つまり，
+      : applyLog :: (a,[c]) -> (a -> (b,[c])) -> (b,[c])
+      は，モナドの
+      : (>>=) :: m a -> (a -> m b) -> m b
+      と似ているという意味だと思う．)
+      では，モノイドがくっ付いた値をモナド型クラスのインスタンスで実現することを考えましょう．
+      =Control.Monad.Writer= は， =Writer w a= 型を
+      =Monad= のインスタンスとして定義してエクスポートしています．
+      同時に関連する便利な関数を提供しています．
+
+      まず値にモノイドをくっつける型を見てみましょう．
+      =Writer w a= は， =newtype= ラッパです:
+      #+BEGIN_SRC haskell
+        newtype Writer w a = Writer { runWriter :: (a, w) }
+      #+END_SRC
+      モナドインスタンスとして，以下のように定義されています．
+      #+BEGIN_SRC haskell
+        instance (Monoid w) => Monad (Writer w) where
+            return x = Writer (x, mempty)
+            (Writer (x,v)) >>= f = let (Writer (y, v')) = f x ☆
+         in Writer (y, v `mappend` v')
+      #+END_SRC
+      まず， =>>== を見てみましょう．
+      これは，基本的には  =applyLog= と同じです．
+      ただ， =Writer newtype= でラップされているので，それを外す部分が違います．
+
+      =return= はどうでしょうか．
+      =return= は，値を取って，デフォルトの(プレーンな)値を返すのでした．
+      =Writer= におけるデフォルト値とは何でしょうか．
+      =mempty= を使って表現します． =mempty= は，
+      : "" や Sum 0
+      です． 空のbytestringもそうですね．
+      =mempty= に他のモノイドを =mappend= した値は，もとのモノイドのままでしたね．
+      従って，  =return= で =Writer= 型の値を作って，その値に  =>>== を使って関数適用すれば，
+      帰ってくるモノイドは，もともとの関数を(returnで包む前の値に)適用した場合と同じものになります．
+      型を変えつつ =3= に対して =return= をいくつか適用してみましょう．
+      #+BEGIN_SRC haskell
+        ghci> runWriter (return 3 :: Writer String Int)
+        (3,"")
+        ghci> runWriter (return 3 :: Writer (Sum Int) Int)
+        (3,Sum {getSum = 0})
+        ghci> runWriter (return 3 :: Writer (Product Int) Int)
+        (3,Product {getProduct = 1})
+      #+END_SRC
+
+      =Writer= は =Show= のインスタンスではないので， =runWriter= を使う必要がありました．
+      また， =Writer= は自身専用の =fail= 関数を持っていないので，
+      =do= 記法中でパターンマッチングに失敗すると， =error= が呼ばれます．
+
+      =Writer= は，モナドなので， =do= 表記中で自由に使えます．
+      =do= の中で使うと， 複数の =Writer= 型の値をひとまとめにして扱いたい場合に便利です．
+      モナド値を通常の値のように扱いながら，モナドの文脈について面倒を見てくれます．
+      =mappend= によって全てが結合された値を最終結果として返してくれます．
+
+      以下の例は， =Writer= について =do= 表記を用いて，2つの値のかけ算を求めています．
+      #+BEGIN_SRC haskell
+        import Control.Monad.Writer
+        
+        logNumber :: Int -> Writer [String] Int
+        logNumber x = writer (x, ["Got number: " ++ show x])
+        
+        multWithLog :: Writer [String] Int
+        multWithLog = do
+            a <- logNumber 3
+            b <- logNumber 5
+            return (a*b)
+      #+END_SRC
+
+      =logNumber= は，数を取って， =Writer= 値を返す．
+      モノイドとしては，文字列が1つだけ入ったリストを返すようにしました．
+      =multWithLog= では， 3 かける 5 を実行して，最終的なログにその経過が記されます．
+      最後の行で =return= を使ってる． =return=  は，最小限の文脈を表現する関数だからです．
+      つまり，これはログに何も加えません．
+      結果を見てみよう:
+      #+BEGIN_SRC haskell
+        ghci> runWriter multWithLog
+        (15,["Got number: 3","Got number: 5"])
+      #+END_SRC
+      場合によっては，モノイドだけを加えたいこともあるでしょう．
+      そんなときは， =tell= 関数が便利です．
+      =tell= は， =MonadWrite= 型クラスを構成する関数の内の1つです．
+      =Writer= における =tell= は， =["This is going on"]=
+      のようなモノイド値を引数に取り， =()=
+      を結果としつつ引数を追記した =Writer= 型の値を返します．
+      #+BEGIN_SRC haskell
+        multWithLog :: Writer [String] Int
+        multWithLog = do
+            a <- logNumber 3
+            b <- logNumber 5
+            tell ["Gonna multiply these two"]
+            return (a*b)
+      #+END_SRC
+      =return (a*b)= が最後の行にあるのは重要です．
+      =do= 式全体の値は，最後に評価された式の値だからです．
+      もし， =tell= を最後に置いていたら， =()= が式の結果になり，
+      ログは同じように残るのに，乗算の結果は失われてしまいます．
+      上の例を動かしてみましょう．
+      #+BEGIN_SRC haskell
+        ghci> runWriter multWithLog
+        (15,["Got number: 3","Got number: 5","Gonna multiply these two"])
+      #+END_SRC
+
+******* Adding logging to programs
+        ユークリッドの互除法は，2つの数の最大公約数を求める方法です．
+        Haskell には，そのもの  =gcd= という関数があります．
+        ここでは，ログ付きの =gcd= を自分で作ってみましょう．
+        まずは，ログなしの方法から:
+        #+BEGIN_SRC haskell
+          gcd' :: Int -> Int -> Int
+          gcd' a b
+              | b == 0    = a
+              | otherwise = gcd' b (a `mod` b)
+        #+END_SRC
+        とてもシンプルですね．これにログ機能を付けると， 型は，
+        #+BEGIN_SRC haskell
+          gcd' :: Int -> Int -> Writer [String] Int      
+        #+END_SRC
+        となる筈です．これに沿って作ると以下の通り:
+        #+BEGIN_SRC haskell
+          import Control.Monad.Writer  
+
+          gcd' :: Int -> Int -> Writer [String] Int
+          gcd' a b
+            | b == 0 = do
+              tell ["Finished with " ++ show a]
+              return a
+            | otherwise = do
+              tell [show a ++ " mod " ++ show b ++ " = " ++ ☆
+                                                  show (a `mod` b)]
+              gcd' b (a `mod` b)
+        #+END_SRC
+        この関数は =Int= を2つ引数に取って， =Write [String] Int= を返します．
+        つまり， ログを付けた =Int= を返します．
+        =b= がゼロの場合，そのまま =a= を返すのではなく， =do= を使って
+        =Writer= 値を返しています．
+        まず =tell= を使って =Finished...= を付加した後，
+        =return= 文によって =a= を =do= 構文の最後の返却値にしています．
+        =do= を使わないで以下のようにも書けます:
+        #+BEGIN_SRC haskell
+          Writer (a, ["Finished with " ++ show a])
+        #+END_SRC
+        しかし， =do= を使ったほうが読みやすいと思います．
+        次に， =b= がゼロでない場合を考えます．
+        この場合は， =mod= を使って，余りを出して再帰します．
+        =gcd'　= は，=Writer= を返すので， =return= で包む必要はありません．
+        では，試してみましょう．結果は =Writer [String] Int= なので，
+        =newtype= からほどくと，タプルになります．最初の要素を =fst= で取り出せば，
+        #+BEGIN_SRC haskell
+          ghci> fst $ runWriter (gcd' 8 3)
+          1
+        #+END_SRC
+        うまくいきました．ログは?
+        文字列のリストなので， =mapM_ printStrLn= で表示できます．
+        #+BEGIN_SRC haskell
+          ghci> mapM_ putStrLn $ snd $ runWriter (gcd' 8 3)
+          8 mod 3 = 2
+          3 mod 2 = 1
+          2 mod 1 = 0
+          Finished with 1
+        #+END_SRC
+        これは素晴しいことだと思いませんか．
+        関数のアルゴリズムが何をしているかを知るためには，
+        普通の値の代わりにモナド値を指定して， =>>== を用意すれば，
+        =Writer= が面倒を見てくれます．
+
+        =Writer= モナドを利用する際に気を付けるべきことは，
+        どんなモノイドを利用するかです．
+        リストを使うと遅くなる場合があります．
+        リストは =mappend= として =++= を使います．それは，
+        リストの末尾に要素を追加する作業を意味するので，長いリストを扱う場合に遅くなってしまいます．
+
+        先の =gcd= 関数におけるロギングは，高速でした．なぜなら，
+        ログの追加は，最終的には，以下の動作になるからです．
+        #+BEGIN_SRC haskell
+          a ++ (b ++ (c ++ (d ++ (e ++ f))))
+        #+END_SRC
+
+        しかし，うっかりすると，以下のような結果を生成しようとします．
+        #+BEGIN_SRC haskell
+          ((((a ++ b) ++ c) ++ d) ++ e) ++ f
+        #+END_SRC
+        前者は，右結合ですが，後者は，左結合です．
+        以下の例は， =gcd'　= と同じですが，ログを逆順に付ける関数です．
+        #+BEGIN_SRC haskell
+          import Control.Monad.Writer
+
+          gcdReverse :: Int -> Int -> Writer [String] Int
+          gcdReverse a b
+              | b == 0 = do
+                  tell ["Finished with " ++ show a]
+                  return a
+              | otherwise = do
+                  result <- gcdReverse b (a `mod` b)
+                  tell [show a ++ " mod " ++ show b ++ " = " ++ ☆
+                            show (a `mod` b)]
+                  return result
+        #+END_SRC
+
+        再帰を最初にして結果を =result= に束縛します．
+        その後に現在の操作をログに追記します．
+        実行すると，
+        #+BEGIN_SRC haskell
+          ghci> mapM_ putStrLn $ snd $ runWriter (gcdReverse 8 3)
+          Finished with 1
+          2 mod 1 = 0
+          3 mod 2 = 1
+          8 mod 3 = 2
+        #+END_SRC
+        この関数は， =++= を左結合で使っているので，効率が悪いです．
+
+******* 差分リスト
+        これまで見たように，リストは，追記を何度も繰り返すには効率の悪いデータ構造です．
+        問題を解決する代替として差分リストを使ってみましょう．
+        差分リストは，リストを取って，別のリストの先頭に付ける *関数* なのです．
+        通常のリスト =[1,2,3]= に対応する差分リストは，
+        =\xs -> [1,2,3] ++ xs= となります．
+        通常の空リストは， =[]= ですが，差分リストでは，
+        =\xs -> [] ++ xs= です．
+
+        差分リストの利点は，追記の効率がいいことです．
+        差分リストで結合を表現してみましょう．
+        #+BEGIN_SRC haskell
+          f `append` g = \xs -> f (g xs)
+        #+END_SRC
+        =f= と =g= は，差分リストですから，つまりリストを引数に取って，
+        前に何かを付ける *関数* だということを思い出してください．
+        例えば， =f= が =("dog"++)= (別の書き方をすると =\xs -> "dog" ++ xs=)
+        で， =g= が ("meat"++) だとすると，
+        =f `append` g= は，以下の関数を表します．
+        #+BEGIN_SRC haskell
+          \xs -> "dog" ++ ("meat" ++ xs)
+        #+END_SRC
+        2つの差分リストの結合は，
+        一方の(dog)差分リストに別の(引数となる)差分リストを結合してから，
+        もう一方の差分リスト(meat) を結合する *関数* になります．
+        差分リストを表現する =newtype= ラッパーを作りましょう．
+        #+BEGIN_SRC haskell
+          newtype DiffList a = DiffList { getDiffList :: [a] -> [a] }
+        #+END_SRC
+        ラップしているのは =[a] -> [a]= です．差分リストは，リストを取ってリストを返す関数だからです．
+        リストと差分リストを行き来する関数を用意しましょう．
+        #+BEGIN_SRC haskell
+          toDiffList :: [a] -> DiffList a
+          toDiffList xs = DiffList (xs++)
+          
+          fromDiffList :: DiffList a -> [a]
+          fromDiffList (DiffList f) = f []
+        #+END_SRC
+        =Monoid= インスタンスは，以下のように定義できます．
+        #+BEGIN_SRC haskell
+          instance Monoid (DiffList a) where
+            mempty = DiffList (\xs -> [] ++ xs)
+            (DiffList f) `mappend` (DiffList g) = DiffList (\xs -> f (g xs))
+        #+END_SRC
+        (xsが)リストだと考えた場合， =mempty= は =id= と同等で，
+        =mappend= は，単なる関数合成だといえますね．
+        動作を確認しましょう:
+        #+BEGIN_SRC haskell
+          ghci> fromDiffList (toDiffList [1,2,3,4] `mappend` ☆
+                     toDiffList [1,2,3])
+          [1,2,3,4,1,2,3]
+        #+END_SRC
+        これで =gcdReverse= を効率化できます．リストの代わりに差分リストを使えばいいだけです．
+        #+BEGIN_SRC haskell
+          import Control.Monad.Writer
+          
+          gcd' :: Int -> Int -> Writer (DiffList String) Int
+          gcd' a b
+            | b == 0 = do
+              tell (toDiffList ["Finished with " ++ show a])
+              return a
+            | otherwise = do
+              result <- gcd' b (a `mod` b)
+              tell (toDiffList [show a ++ " mod " ++ show b ++ ☆
+                     " = " ++ show (a `mod` b)])
+              return result
+        #+END_SRC
+        =Writer= に与えるモノイドを =[String]= から =DiffList String= に変えて，
+        =tell= に与えるリストを =toDiffList= を使って差分リストにしています．
+        動作を確認しましょう:
+        #+BEGIN_SRC haskell
+          ghci> mapM_ putStrLn . fromDiffList . snd . runWriter $ ☆
+                gcdReverse 110 34
+          Finished with 2
+          8 mod 2 = 0
+          34 mod 8 = 2
+          110 mod 34 = 8
+        #+END_SRC
+        =gcdReverse 110 34= の後に =runWriter= で =newtype= のラップを剥し，
+        =snd= でログを取り出して， =fromDiffList= でリストにしています．
+
+******* Comparing Performance
+        差分リストがどの程度パフォーマンスを改善するか体感するために，
+        ある数から0までカウントダウンするだけの関数を作ってみましょう．
+        ただし，ログは逆順で記録されるので，カウントアップしているように見えますが．
+        #+BEGIN_SRC haskell
+          finalCountDown :: Int -> Writer (DiffList String) ()
+          finalCountDown 0 = do
+              tell (toDiffList ["0"])
+          finalCountDown x = do
+              finalCountDown (x-1)
+              tell (toDiffList [show x])
+        #+END_SRC
+        先に再帰してから， =tell= でログを出力するために，
+        最初の呼び出しの値が最後に追記されます．
+        つまり， =finalCountDown 100= は，最後に "100" が追記されるわけです．
+        #+BEGIN_SRC haskell
+          ghci> mapM_ putStrLn . fromDiffList . snd . runWriter $ ☆
+                  finalCountDown 500000
+          0
+          1
+          2
+          ...
+        #+END_SRC
+        これに対して，普通の =List= を使うとどうなるでしょうか．
+        #+BEGIN_SRC haskell
+          finalCountDown :: Int -> Writer [String] ()
+          finalCountDown 0 = do
+              tell ["0"]
+          finalCountDown x = do
+              finalCountDown (x-1)
+              tell [show x]
+        #+END_SRC
+        GHCi で実行すると:
+        #+BEGIN_SRC haskell
+          ghci> mapM_ putStrLn . snd . runWriter $ finalCountDown 500000
+        #+END_SRC
+        とても遅い．
+
+***** Reader? Ugh, not this joke again.
+      [[http://learnyouahaskell.com/for-a-few-monads-more#reader][(http://learnyouahaskell.com/for-a-few-monads-more#reader)]]
+
+      [[http://learnyouahaskell.com/functors-applicative-functors-and-monoids][アプリカティブ]] のところで，関数型 =(->) r= も =Functor= だと分かりました．
+      関数 =f= を 関数 =g= にマップすると， =g= が引数で取るのと同じ型の引数を取り，
+      それを =g= に適用した後に =f= に適用する関数を生成します．
+      つまり:
+      #+BEGIN_SRC haskell
+        ghci> let f = (*5)
+        ghci> let g = (+3)
+        ghci> (fmap f g) 8
+        55
+      #+END_SRC
+      また，関数は，アプリカティブファンクタであるとも習いました．
+      これによって，まだ計算されていない関数の結果をまるでそこにあるように扱えます．
+      例えば，
+      #+BEGIN_SRC haskell
+        ghci> let f = (+) <$> (*2) <*> (+10)
+        ghci> f 3
+        19
+      #+END_SRC
+      =(+) <$> (*2) <*> (+10)= は，数を引数に取って，それに =(*2)= したものと =(+10)=
+      したものを足す関数です．
+
+      (訳注ここから)
+      =<$>= は =fmap :: (a -> b) -> f a -> f b= と等価の中置記法演算子．
+      =<*>= は =fmap= と似ているが，マップする関数自体が =Functor= となっている．
+      つまり， =f (a -> b) -> f a -> f b= となる． =Control.Applicative= 参照．
+      : (+) <$> (*2) <*> (+10)
+      を分解すると，
+      : pure (+) <*> (*2) <*> (+10)
+      あるいは，以下と同等．
+      : fmap (+) (*2) <*> (+10)
+      ここで，
+      : pure (+) :: (Applicative f, Num a) => f (a -> a -> a)
+      であることに注意．
+      関数における =<*>= は，
+      : f <*> g = \x -> f x (g x)
+      であり， =fmap (+) (*2)=  は関数合成なので， =(+) <$> (*2)= までで
+      =(\x y -> x * 2 + y)= なる関数ができる．
+      次に， =(\x y -> x * 2 + y) <*> (+10)= は， =<*>= の定義から，
+      =(\x y -> x * 2 + y) z (z+10)= となる．
+      これは， =(\z -> z * 2 + z + 10)= となるので，すなわち
+      引数に2かけたものと10足したものを足す関数となる．
+      (訳注ここまで)
+      
+      関数もモナドである，つまり文脈を持った値であるといえます．
+      関数における文脈とは，値はまだ存在せず，
+      値が欲しければ，何かにそれを適用しなければならないという状態です．
+
+      では， =Monad= インスタンスの定義へと向かうことにしましょう．
+      =Control.Monad.Instances= にあります．
+      #+BEGIN_SRC haskell
+        instance Monad ((->) r) where
+          return x = \_ -> x
+          h >>= f = \w -> f (h w) w
+      #+END_SRC
+      既に =pure= の実装を見ているので， =return= は，そのまんまだと分かるでしょう．
+      =>>== は複雑に見えるかもしれませんが，そうでもありません．
+      =>>== の本来の意味は，モナド値から中身を取り出して関数に適用して，
+      結果をまたモナド値にするというものです．結果がモナド値，(つまりここでは関数)にするという意味で，
+      ラムダ式で始まっています．
+      =h= から中身を取り出して， =f= に適用するというこれまでと同じ実装を考えた場合，
+      関数における「中身を取り出す」は，関数適用ですから， =(h w)= です．
+      これに =f= を適用します． =f= は，モナド値(つまり関数)を返す関数なので，
+      これにも =w= を適用しています．
+      
+      この説明が，よく分からなくても心配しないでください．
+      次に =do= 表記でシンプルなんだということを示します．
+
+      #+BEGIN_SRC haskell
+        import Control.Monad.Instances
+
+        addStuff :: Int -> Int
+        addStuff = do
+            a <- (*2)
+            b <- (+10)
+            return (a+b)
+      #+END_SRC
+      これは，アプリカティブ表記で書いた先の例と同じですが，
+      関数がモナドであることを利用して
+      =do= で書いたものです．
+      =do= は，モナド値を返します．今回も例外ではありません．
+      試してみましょう．
+      #+BEGIN_SRC haskell
+        ghci> addStuff 3
+        19
+      #+END_SRC
+      この場合， =(*2)= と =(+10)= は，どちらも 3に適用されます．
+      =return (a+b)= もそうですが，引数を無視するので，結果として =a+b= を返すことになります．
+      この性質から，関数は，reader モナドと呼ばれています．
+      なぜなら，全部の関数が共通の(同じ)引数を読んでいるからです．
+      このことがよく分かるように =addStuff= を書き直してみます．
+      #+BEGIN_SRC haskell
+        addStuff :: Int -> Int
+        addStuff x = let
+          a = (*2) x
+          b = (+10) x
+          in a+b
+      #+END_SRC
+      reader モナドは，関数を文脈を伴った値として扱えます．
+      関数の返す値が既に分かっているものとして(その値のように)扱えるのです．
+      これによって，複数の関数を1つにまとめておいて，
+      一度に個々の関数に引数を与えることができます．
+
+***** Tasteful stateful computations
+      [[http://learnyouahaskell.com/for-a-few-monads-more#state][(http://learnyouahaskell.com/for-a-few-monads-more#state)]]
+
+      Haskell は純粋な関数です．グローバルな状態や変数を変えることはできません．
+      このことが個々の変数の「状態」を考えなくていいので，問題を簡単にします．
+      しかし，「状態」そのものが問題の本質であるような場合はどうすればいいでしょうか．
+      Haskell では，state モナドが用意されています．
+
+      これまで，乱数について扱ってきました．
+      random generator を引数に取って，乱数とともに新しい random generator を返す関数です．
+      この方法でいくつかの乱数を生成しようとすれば，常に前の結果がもたらす random generator
+      を引数に与えなければなりません． =StdGen= を引数に取りながら，
+      コンントスを 3回する関数は，こうでした:
+      #+BEGIN_SRC haskell
+        threeCoins :: StdGen -> (Bool, Bool, Bool)
+        threeCoins gen =
+            let (firstCoin, newGen) = random gen
+                (secondCoin, newGen') = random newGen
+                (thirdCoin, newGen'') = random newGen'
+            in  (firstCoin, secondCoin, thirdCoin)
+      #+END_SRC
+      このようなステートフルな計算を手動でやりたくなければ，純粋性を犠牲にする他ないと思うかもしれません．
+      しかし， state モナドを使えばできます．
+      まず，状態付き計算について理解を深めるために，それを扱う型について考えましょう．
+      これは，ある状態を引数に取り，その状態から得らえる計算結果と，新しい状態を返す関数でしょう．
+      #+BEGIN_SRC haskell
+        s -> (a,s)
+      #+END_SRC
+      これもまた文脈を伴う値だといえます．
+
+******* Stacks and Stones
+        スタックを操作するモデルを考えましょう．まず =pop= と =push= なる関数を作ります．
+        =pop= は，スタックを引数に取り，(スタックのトップの)値と，変化後のスタックを返します．
+        =push= は，スタックとプッシュしたい値を引数に取り，新スタックと空タプルを返します．
+        #+BEGIN_SRC haskell
+          type Stack = [Int]
+          
+          pop :: Stack -> (Int,Stack)
+          pop (x:xs) = (x,xs)
+          
+          push :: Int -> Stack -> ((),Stack)
+          push a xs = ((),a:xs)
+        #+END_SRC
+        =push= に第1引数だけを適用すると，状態付き計算になりますね．
+        =pop= は既に状態付き計算です．
+        これを使ってスタック操作をやってみます．
+        #+BEGIN_SRC haskell
+          stackManip :: Stack -> (Int, Stack)
+          stackManip stack = let
+              ((),newStack1) = push 3 stack
+              (a ,newStack2) = pop newStack1
+              in pop newStack2
+        #+END_SRC
+        #+BEGIN_SRC haskell
+          ghci> stackManip [5,8,2,1]
+          (5,[8,2,1])
+        #+END_SRC
+        これは，面倒ですね．こう書きたいものです．
+        #+BEGIN_SRC haskell
+          stackManip = do  
+              push 3  
+              a <- pop  
+              pop  
+        #+END_SRC
+        state モナドを使うと，これができます．
+
+******* The State monad
+        =Control.Monad.State= が状態付き計算のための =newtype= を与えています．
+        #+BEGIN_SRC haskell
+          newtype State s a = State { runState :: s -> (a,s) }
+        #+END_SRC
+        =State s a= は， =s= 型の状態を制御し，結果を =a= 型として返す *関数* です．
+        では，モナドインタフェースを見てみましょう．
+        #+BEGIN_SRC haskell
+          instance Monad (State s) where
+            return x = State $ \s -> (x,s)
+            (State h) >>= f = State $ \s -> let (a, newState) = h s
+                                                (State g) = f a
+                                            in  g newState
+        #+END_SRC
+        =return= は，状態を変えないでもとの値を返す関数を作ります．
+        =>>== はどうでしょうか． =State h= に関数 =f= を適用した結果は，やはり
+        =State= にならないといけないので，まず =State newtype= ラッパーから始まります．
+        では，その中身は?
+        どうにかして最初の =State h= から中身(ここでは =a=)
+        を取り出さなくてはなりません．
+        中身を取り出すには， =h= を =s= に適用すればいいのです．
+        すると， =(a, newState)= を得られます．
+        これまで =>>== を実装するには，モナド値から中身を取り出して，
+        =f= を適用して再びモナドに包んでしました．
+        =Writer= においては，これらを実行した後， =mappend= で
+        2つのモノイドをくっ付ける処理も必要でした．
+        今回は，まず =f a= をして新しい状態付き計算 =g= を作成します．
+        そして，この新しい状態付き計算 =g= と新しい状態 (ここでは =newState=)が揃ったら，
+        =g= を =newState= に適用します．
+        それは，最終値と最終状態のタプルになります．
+
+        つまり， =>>== は，2つの状態付き計算をくっつけることができます．
+        2つ目の計算は，その前の計算の結果を受け取る関数に隠されます．
+        =pop= と =push= は，状態付き計算なので， =State= で包むのは簡単です:
+        #+BEGIN_SRC haskell
+          import Control.Monad.State
+          
+          type Stack = [Int]
+          
+          pop :: State Stack Int
+          pop = state $ \(x:xs) -> (x,xs)
+          
+          push :: Int -> State Stack ()
+          push a = state $ \xs -> ((),a:xs)
+        #+END_SRC
+        これまでの例を書き直してみましょう:
+        #+BEGIN_SRC haskell
+          import Control.Monad.State
+          
+          stackManip :: State Stack Int
+          stackManip = do
+              push 3
+              a <- pop
+              pop
+        #+END_SRC
+        これの =newtype= ラッパーを =runState= で剥して関数にして，
+        初期状態を与えると動きます．
+        #+BEGIN_SRC haskell
+          ghci> runState stackManip [5,8,2,1]
+          (5,[8,2,1])
+        #+END_SRC
+
+        =stackManip= 中の =a= は使っていないので，こう書けます．
+        #+BEGIN_SRC haskell
+          stackManip :: State Stack Int
+          stackManip = do
+              push 3
+              pop
+              pop
+        #+END_SRC
+        クール!!
+        さて，こんなことはできるでしょうか．
+        スタックから =pop= して 5ならば，戻して止まる．
+        5でなければ，3,8 をプッシュする．
+        #+BEGIN_SRC haskell
+          stackStuff :: State Stack ()
+          stackStuff = do
+              a <- pop
+              if a == 5
+                  then push 5
+                  else do
+                      push 3
+                      push 8
+        #+END_SRC
+        とても直感的です．動作を試してみましょう．
+        #+BEGIN_SRC haskell
+          ghci> runState stackStuff [9,0,2,1,0]
+          ((),[8,3,0,2,1,0])        
+        #+END_SRC
+        ここで，思い出してください．
+        =do= は，モナド値を返すこと，つまり =State= モナドにおいては，
+        =do= は，状態付き計算を返すことを．
+        つまり， =stackManip= と =stackStuff= は，状態付き計算ですから，
+        2つをくっつけて，新しい状態付き計算を作れます．
+        #+BEGIN_SRC haskell
+          moreStack :: State Stack ()
+          moreStack = do
+              a <- stackManip
+              if a == 100
+                  then stackStuff
+                  else return ()
+        #+END_SRC
+        =stackManip= の結果が 100 ならば，=stackStuff= を実行し，
+        そうでなければ， =return ()= つまり，状態を変更しません．
+
+        =Control.Monad.State= は， =MonadState= という型クラスを提供しています．
+        そして，2つのとても有用な関数 =get= と =put= を持っています．
+        =State= について =get= は，以下の実装になっています．
+        #+BEGIN_SRC haskell
+          get = State $ \s -> (s,s)
+        #+END_SRC
+        これは，現在の状態を取って，結果として返しているだけです．
+        一方 =put= は，状態を表す引数を取り，
+        その状態を新たな状態とするような関数を返します．
+        #+BEGIN_SRC haskell
+          put newState = State $ \s -> ((),newState)
+        #+END_SRC
+        これらを使うと，先の例は，以下の通りになります．
+        #+BEGIN_SRC haskell
+          stackyStack :: State Stack ()
+          stackyStack = do
+              stackNow <- get
+              if stackNow == [1,2,3]
+                  then put [8,3,1]
+                  else put [9,2,1]
+        #+END_SRC
+        =State= における =>>== の実装を見ておきましょう．
+        #+BEGIN_SRC haskell
+          (>>=) :: State s a -> (a -> State s b) -> State s b
+        #+END_SRC
+        状態を表す =s= の型は変化がないですが，結果を表す型は， =a= から =b= に変化しています．
+        つまり，これから分かることは，2つの状態付き計算をくっつけるときに，
+        計算結果の型は異なってもよいが，状態を表す型は一致しなければならないということです．
+        なぜでしょうか?
+        =Maybe= について見てみましょう．
+        #+BEGIN_SRC haskell
+          (>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
+        #+END_SRC
+        分かるように，モナドそのもの(つまり =Maybe=) は変更していません．
+        2つの異なるモナド間での =>>== は意味がないからです．
+
+        =State= モナドの場合は， =State s= がモナドの形です．なので， =s= に変化があってはならないのです．
+
+******* Randomness and the state monado
+        先に乱数の生成は，ジェネレータを伴い，
+        これをどんどん新しくしていくのが面倒だと説明しました．
+        これは， =State= モナドで解決できます．
+
+        =System.Random= の =random= 関数は，以下の型を持っています．
+        #+BEGIN_SRC haskell
+          random :: (RandomGen g, Random a) => g -> (a, g)
+        #+END_SRC
+        これは，状態付き計算ですね．したがって， =State newtype=
+        構成子 =state= で包んで，モナド値として扱いましょう．
+        #+BEGIN_SRC haskell
+          import System.Random
+          import Control.Monad.State
+          
+          randomSt :: (RandomGen g, Random a) => State g a
+          randomSt = state random
+        #+END_SRC
+        3つのコインを投げてみましょう．(True が裏， False が表)
+        #+BEGIN_SRC haskell
+          import System.Random
+          import Control.Monad.State
+          
+          threeCoins :: State StdGen (Bool,Bool,Bool)
+          threeCoins = do
+              a <- randomSt
+              b <- randomSt
+              c <- randomSt
+              return (a,b,c)
+        #+END_SRC
+        =threeCoins= は，状態付きの計算ですね．ランダムジェネレータの初期値を取り
+        最初の =randomSt= に渡したら，数と新しいジェネレータを返します．
+        それを次に引き渡します．
+        結果を =return (a,b,c)= で得ます． =return= によるジェネレータの変化はありません．
+        #+BEGIN_SRC haskell
+          ghci> runState threeCoins (mkStdGen 33)
+          ((True,False,True),680029187 2103410263)
+        #+END_SRC
+        すばらしい．
+
+***** Error error on the wall
+      [[http://learnyouahaskell.com/for-a-few-monads-more#error][(http://learnyouahaskell.com/for-a-few-monads-more#error)]]
+      =Maybe= は，失敗するかもしれない値を扱うとして導入されました．
+      便利ですが， =Nothing= の場合，失敗の原因などは一切分かりません．
+      一方， =Ether e a= だと，どちらにも値を付けられるので，失敗した理由が分かりやすいでしょう．
+      =Right= 値を成功， =Left= 値を失敗として扱えます:
+      #+BEGIN_SRC haskell
+        ghci> :t Right 4  
+        Right 4 :: (Num t) => Either a t  
+        ghci> :t Left "out of cheese error"  
+        Left "out of cheese error" :: Either [Char] b 
+      #+END_SRC
+      これは， =Maybe= の拡張ともいえます．なので，当然モナドであるべきです．
+      モナドインスタンスは， =Maybe= のそれと似ています．
+      =Control.Monad.Error= に定義されています．
+      #+BEGIN_SRC haskell
+        instance (Error e) => Monad (Either e) where
+          return x = Right x
+          Right x >>= f = f x
+          Left err >>= f = Left err
+          fail msg = Left (strMsg msg)
+      #+END_SRC
+      =return= は，いつものようにデフォルトの最小の文脈を与えます．
+      これには =Right= 値を使います． =Right= が成功したことを示すからです．
+      これは， =Maybe= の =return= と似ていますね．
+      =>>== は， =Left= と =Right= の2つの可能性を考慮しています．
+      =Right= なら，中身に関数 =f= を適用します． =Just= と同じように．
+      もしエラーなら， 失敗を示す =Left= 値をそのまま保持します．
+
+      =Either e= の =Monad= インスタンスには，もう1つ条件があります．
+      =Left= が持つ値の型 (=e=) は， =Error= 型クラスのインスタンスでなければなりません．
+      これは，エラーメッセージのように振舞う型クラスです．
+      これは =strMsg= 関数を擁し，文字列を引数に取ってエラーとします．
+      =Error= 型クラスのインスタンスのいい例は， =String= です．
+      =String= の =strMsg= は，引数をそのまま返すだけです．
+      #+BEGIN_SRC haskell
+        ghci> :t strMsg
+        strMsg :: (Error a) => String -> a
+        ghci> strMsg "boom!" :: String
+        "boom!"
+      #+END_SRC
+      通常， =Error= のインスタンスとしては， =String= を使うので，心配無用です．
+      =do= 表記の中でパターンマッチングが失敗した場合は，失敗を示すために
+      =Left= 値が使われます．
+      #+BEGIN_SRC haskell
+        ghci> Left "boom" >>= \x -> return (x+1)
+        Left "boom"
+        ghci> Right 100 >>= \x -> Left "no way!"
+        Left "no way!"
+      #+END_SRC
+      =>>== を使って =Left= 値を関数に適用すると，関数は無視されて =Left= 値がそのまま返されます．
+      =Right= の場合は，中身に関数が適用されます．上記の例では，全部 =Left= ですが．
+
+      =Right= を関数適用してみましょう．
+      #+BEGIN_SRC haskell
+        ghci> Right 3 >>= \x -> return (x + 100)
+        
+        <interactive>:1:0:
+        Ambiguous type variable `a' in the constraints:
+          `Error a' arising from a use of `it' at <interactive>:1:0-33
+          `Show a' arising from a use of `print' at <interactive>:1:0-33
+        Probable fix: add a type signature that fixes these type variable(s)
+      #+END_SRC
+      おや． =Either e a= の =e= の型を推論できずにエラーが出ています．
+      =Right= しかいらないというのに．これは，モナドインスタンスの型制約に
+      =Error e= があるためです．
+      明示的に型シグネチャーを付ければ解決です．
+      #+BEGIN_SRC haskell
+        ghci> Right 3 >>= \x -> return (x + 100) :: Either String Int
+        Right 103
+      #+END_SRC
+      (訳注: シグネチャーの有無に関係なく，import Control.Monad.Error するとOKで，
+      しないと NGになる??)
+
+      ちょっとしたつまずきを除けば， =Either= は =Maybe= とよく似ています．

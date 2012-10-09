@@ -1,0 +1,127 @@
+#+TITLE:     演習問題と解答(08) - 乃村研Haskell勉強会2012
+#+AUTHOR:    乃村 能成
+#+EMAIL:     nom@cs.okayama-u.ac.jp
+#+DATE:      2012-06-25
+#+SETUPFILE: options/default.org
+
+* 演習問題と解答(08)
+*** 出題範囲
+    + 08章 A yes-no typeclass から
+    + 09章 Hello, world! まで
+
+    [[file:t08-08-09-nom.org][輪講資料]]へ
+*** 問題
+***** 問題1
+      =YesNo= 型クラスにおいて，リストの =No= は，空の場合でしたが，
+      #+BEGIN_SRC haskell
+        class YesNo a where
+          yesno :: a -> Bool
+
+        instance YesNo [a] where
+          yesno [] = False
+          yesno _ = True
+      #+END_SRC
+      これを変更して，空リストのリストも =No= となるようにしなさい．
+
+      実行例:
+      #+BEGIN_EXAMPLE
+        ghci> yesno [[],[]]
+        Fasle
+      #+END_EXAMPLE
+
+***** 問題2
+      どういうわけで =Map k= が =Functor= の一員になるのかについて説明しなさい．
+
+***** 問題3
+      =do= の中に I/O を書くことで，何故安全に副作用のある関数とそうでない関数を分離できるのか．
+      例えば，純粋な関数が戻り値を返す前に結果を画面に表示してみたい場合を考えてみよ．
+
+*** 解答例
+***** 解答1
+      #+BEGIN_SRC haskell :results output
+        class YesNo a where
+          yesno :: a -> Bool
+        
+        instance YesNo Int where
+          yesno 0 = False
+          yesno _ = True
+        
+        instance YesNo a => YesNo [a] where
+          yesno []     = False
+          yesno (x:xs) = (yesno x) || (yesno xs)
+        
+        main = do      
+          print $ yesno [[] :: [Int], []]
+          print $ yesno [1 :: Int]
+      #+END_SRC
+
+      実行結果:
+      #+RESULTS:
+      : False
+      : True
+
+***** 解答2
+      Functor になるためには，fmap が必要．
+      Data.Map のソースコードを読むと， [[file://Library/Haskell/doc/ghc-doc/libraries/containers-0.4.0.0/src/Data-Map.html#map][Data/Map.hs の map]]
+      #+BEGIN_SRC haskell
+        instance Functor (Map k) where
+        fmap f m  = map f m
+        
+        map :: (a -> b) -> Map k a -> Map k b
+        map f = mapWithKey (\_ x -> f x)
+        
+        mapWithKey :: (k -> a -> b) -> Map k a -> Map k b
+        mapWithKey f = go
+          where
+            go Tip = Tip
+            go (Bin sx kx x l r) = Bin sx kx (f kx x) (go l) (go r)
+      #+END_SRC
+      つまり，全ての value に関数を適用して置き換える fmap が定義されている．
+
+***** 解答3
+      以下のようにprintfデバッグをすることも可能であるが，
+      #+BEGIN_SRC haskell
+        import Data.Char
+        import Text.Printf
+        
+        readInt :: IO Int
+        readInt = do 
+          str <- getLine
+          let num = read (findDigit str) :: Int
+          printf "readInt: %d\n" num
+          return num
+          where findDigit = filter isDigit
+        
+        main = do
+          n <- readInt
+          print n
+      #+END_SRC
+      Haskell では，関数は1つの式なので，
+      1) 式全体が1つの型を持つので先頭に do を置く以外 IO できない．
+      2) つまり，純粋関数の途中に do を混ぜられない．
+      3) do (IO) を使った時点でその関数の型に IO が付く．
+      この原理で，IO と純粋関数が分離できる．
+
+      上記例のように，全部に IO を付ければ，
+      普通の手続き型っぽく同じことが書けるが，
+      副作用のある関数が多くなるのは望ましくない．
+      
+      Haskell の場合は，関数から ``IO''
+      をできるだけ減らすということが目に見えるので，より安全になる．
+
+      #+BEGIN_SRC haskell
+        import Data.Char
+        import Text.Printf
+        
+        readInt :: String -> Int
+        readInt str = read (findDigit str) :: Int
+          where findDigit = filter isDigit
+        
+        main = do
+          n <- getLine
+          let num = readInt n
+          printf "readInt: %d\n" num
+          print $ num
+      #+END_SRC
+
+      のように，IO を局所化することが大事だと目で見て分かる．

@@ -1,0 +1,869 @@
+#+TITLE:     輪講資料(08) - 乃村研Haskell勉強会2012
+#+AUTHOR:    乃村 能成
+#+EMAIL:     nom@cs.okayama-u.ac.jp
+#+DATE:      2012-06-25
+#+SETUPFILE: options/default.org
+
+* Learn You a Haskell for Great Good!
+***  [[http://learnyouahaskell.com/making-our-own-types-and-typeclasses][8]]. Making Our Own Types and Typeclasses 
+***** A yes-no typeclass
+      [[http://learnyouahaskell.com/making-our-own-types-and-typeclasses#a-yes-no-typeclass][(http://learnyouahaskell.com/making-our-own-types-and-typeclasses#a-yes-no-typeclass)]]
+
+      JavaScript の =True/False= っぽい振舞いをする型クラスを作ってみよう．
+      + JavaScript の =if= は，条件文内が空でない文字列なら真
+      + Haskell であれば， =Bool= を使うところ
+      #+begin_src haskell
+        class YesNo a where
+          yesno :: a -> Bool
+      #+end_src
+      + =YesNo= 型クラスは， =yesno= という1つの関数を定義している
+      + =a= 型の値を1つ取り，それが真っぽい値だったら， =True= を返す
+
+      次は，型クラスのインスタンス定義．
+      数に関していえば，JS のように非 =0= を真とするのが自然．
+      #+BEGIN_SRC haskell
+        instance YesNo Int where
+          yesno 0 = False
+          yesno _ = True
+      #+END_SRC
+
+      リスト(そして文字列)の場合は，それが空なら偽．
+      #+BEGIN_SRC haskell
+        instance YesNo [a] where
+          yesno [] = False
+          yesno _ = True
+      #+END_SRC
+      ここで，リスト内の =a= の具象データ型を指定していないことに注目して．
+      =Bool= 型は，そのままいける．
+      #+BEGIN_SRC haskell
+        instance YesNo Bool where
+          yesno = id
+      #+END_SRC
+      ここで， =id= とは?
+      これは，引数を1つだけ取って，同じものを返すだけの関数．
+      つまり，以下は同等．
+      #+BEGIN_EXAMPLE
+        yesno True
+        id True
+        True
+      #+END_EXAMPLE
+
+      =Maybe a= もインスタンスにしてみよう．
+      #+BEGIN_SRC haskell
+        instance YesNo (Maybe a) where
+          yesno (Just _) = True
+          yesno Nothing = False
+      #+END_SRC
+      ここで， =a= についての型クラス制約は不要．
+      なぜなら， =Just= と =Nothing= だけで =True/False= を決めているから．
+      ただ， =Maybe= だけではだめで， =Maybe a= と書く必要があります．
+      =Maybe= だけでは具象データ型ではないので．
+
+      先に定義した =Tree a= 型(二分探索木)については，空の木を =False=
+      としましょう．
+      #+BEGIN_SRC haskell
+        instance YesNo (Tree a) where
+          yesno EmptyTree = False
+          yesno _ = True
+      #+END_SRC
+
+      信号機はどうだろう? 黄色は進めってことで，
+      #+BEGIN_SRC haskell
+        instance YesNo TrafficLight where
+          yesno Red = False
+          yesno _ = True
+      #+END_SRC
+
+      インスタンスが揃ったので，遊んでみよう．
+      #+BEGIN_EXAMPLE
+        ghci> yesno $ length []  
+        False  
+        ghci> yesno "haha"  
+        True  
+        ghci> yesno ""  
+        False  
+        ghci> yesno $ Just 0  
+        True  
+        ghci> yesno True  
+        True  
+        ghci> yesno EmptyTree  
+        False  
+        ghci> yesno []  
+        False  
+        ghci> yesno [0,0,0]  
+        True  
+        ghci> :t yesno  
+        yesno :: (YesNo a) => a -> Bool  
+      #+END_EXAMPLE
+      うまくいってる．
+
+      では， =if= 文を模倣してみよう．
+      ただし， =YesNo= 型クラスのインスタンスを引数に取る．
+
+      #+BEGIN_SRC haskell
+        yesnoIf :: (YesNo y) => y -> a -> a -> a
+        yesnoIf yesnoVal yesResult noResult = if yesno yesnoVal 
+                                              then yesResult 
+                                              else noResult
+      #+END_SRC
+      この関数は， =YesNo= な値とあと2つの引数を取り，Yes っぽければ，
+      2つの引数の前者，そうでないなら，後者を返します．
+      #+BEGIN_EXAMPLE
+        ghci> yesnoIf [] "YEAH!" "NO!"
+        "NO!"
+        ghci> yesnoIf [2,3,4] "YEAH!" "NO!"
+        "YEAH!"
+        ghci> yesnoIf True "YEAH!" "NO!"
+        "YEAH!"
+        ghci> yesnoIf (Just 500) "YEAH!" "NO!"
+        "YEAH!"
+        ghci> yesnoIf Nothing "YEAH!" "NO!"
+        "NO!"
+      #+END_EXAMPLE
+
+***** The Functor typeclass
+      [[http://learnyouahaskell.com/making-our-own-types-and-typeclasses#the-functor-typeclass][(http://learnyouahaskell.com/making-our-own-types-and-typeclasses#the-functor-typeclass)]]
+
+      これまで，標準ライブラリの型クラスを見てきました．
+      + Ord :: 順番付けできる型のクラス
+      + Eq :: 同値関係を判定できる型のクラス
+      + Show :: 文字列で方言できる型のクラス
+      + Read :: 文字列から変換可能な型のクラス
+      ここで， =Functor= 型クラスを見ます．
+      Functor は，(リストのように)マップ可能な何かを表わしています．
+      実装を覗いてみると:
+      #+BEGIN_SRC haskell
+        class Functor f where
+          fmap :: (a -> b) -> f a -> f b
+      #+END_SRC
+      =fmap= 関数は，これまで見てきた関数とは，ちょっと違います．
+      なぜなら， =f a= の =f= は，具象データ型ではなく，
+      =a= という型を引数に取る型構成子だからです．
+
+      つまり， =f= は， =Int=, =Bool=, =Maybe String= が持つような値を持たない．
+      たとえば， =Maybe Int= は具象データ型だけど， =Maybe= は，具象データ型
+      (ここでは =Int= ) を取る型構成子です．(訳注: リスト =[a]= は =[] a= と書けるよね)
+
+      とにかく， =fmap= は，ある型から別の型を得る関数と，
+      ある型が適用された Functor を取り，別の型が適用された Functor を返すのです．
+      =map= 関数の型シグネチャと比較してみるとよく分かります．
+      #+BEGIN_SRC haskell
+        map :: (a -> b) -> [a] -> [b]
+      #+END_SRC
+      つまり， =map= は，リスト限定の =fmap= なのです．
+      リストを Functor のインスタンスにするには，以下のようにします．
+      #+BEGIN_SRC haskell
+        instance Functor [] where
+          fmap = map
+      #+END_SRC
+      =instance Functor [a]= ではないことに注意．
+      =fmap :: (a -> b) -> f a -> f b= を見ると分かるように，
+      =f= は，別の型を1つ取る型構成子だからです．
+      =[a]= は具象データ型なのに対して， =[]= は， =[Int]= や =[String]= や =[[String] ]= さえ作る
+      型構成子なのです．
+
+      リストの =fmap= は =map= と同じです．
+      #+BEGIN_EXAMPLE
+        map :: (a -> b) -> [a] -> [b]
+        ghci> fmap (*2) [1..3]
+        [2,4,6]
+        ghci> map (*2) [1..3]
+        [2,4,6]
+      #+END_EXAMPLE
+
+      箱のように振舞う型が Functor です．リストは無限に続く小部屋です．他に箱っぽいものは?
+      =Maybe a= がそうです:
+      + 中に何も入っていなければ， =Nothing=
+      + "HAHA" が入っていれば， =Just= "HAHA"
+      定義を見ると:
+      #+BEGIN_SRC haskell
+        instance Functor Maybe where
+          fmap f (Just x) = Just (f x)
+          fmap f Nothing = Nothing
+      #+END_SRC
+      しつこいけど， =instance Functor Maybe= です =instance Functor (Maybe m)= じゃなくてね．
+
+      心の中で =f s= を =Maybe s= に置き換えると，
+      =fmap= は， =(a -> b) -> Maybe a -> Maybe b=
+      となり，OKです．しかし， =f= を =(Maybe m)= で置き換えると，
+      =(a -> b) -> Maybe m a -> Maybe m b= となって変です．
+      なぜなら， =Maybe= は，1つしか引数を取らないからです．
+
+      とにかく， =fmap= の実装は，とてもシンプルでしょ．
+      =Nothing= という空の値なら， =Nothing= を返します．
+      空の箱からは，空の箱．もし， =Just= 付きの値であれば，
+      その =Just= の中の値に =f= を適用する．
+
+      #+BEGIN_EXAMPLE
+        ghci> fmap (++ " HEY GUYS IM INSIDE THE JUST") (Just "Something serious.")
+        Just "Something serious. HEY GUYS IM INSIDE THE JUST"
+        ghci> fmap (++ " HEY GUYS IM INSIDE THE JUST") Nothing
+        Nothing
+        ghci> fmap (*2) (Just 200)
+        Just 400
+        ghci> fmap (*2) Nothing
+        Nothing
+      #+END_EXAMPLE
+      
+      別の Functor の例に， =Tree a= 型があります．
+      =Tree= も見方によっては，箱と考えることができますし，
+      =Tree= のコンストラクタは，引数を1つ取るからです．
+      =fmap= を =Tree= 専用の関数だと思って見ると， =fmap= のシグネチャは，
+      =(a -> b) -> Tree a -> Tree b= となります．
+      ここでの =fmap= は，再帰で書けそうです．
+      + 空の木に関しては，空を返す
+      + 空でないなら
+        + ルートノードは，もとのルートノードに =f= を適用したもの
+        + 左部分木は，元の左部分木に =fmap= を適用したもの
+        + 右部分木は，元の右部分木に =fmap= を適用したもの
+      となりそうです．
+
+      #+BEGIN_SRC haskell
+        instance Functor Tree where
+          fmap f EmptyTree = EmptyTree
+          fmap f (Node x leftsub rightsub) = 
+            Node (f x) (fmap f leftsub) (fmap f rightsub)
+      #+END_SRC
+      ナイス!
+
+      では， =Either a b= はどう? Functor になれそう?
+      =Either= は引数を2つ取るので，これまでとちょっと違います．
+      でも， =Either= に引数を1つだけ与えた状態(部分適用した状態) なら?
+      標準ライブラリ中でどのように =Either= が Functor になっているか見てみると:
+
+      #+BEGIN_SRC haskell
+        instance Functor (Either a) where
+          fmap f (Right x) = Right (f x)
+          fmap f (Left x) = Left x
+      #+END_SRC
+
+      =Either a= が Functor のインスタンスになっていいます．
+      =Either= ではないのです．
+      型シグネチャも =(b -> c) -> Either a b -> Either a c= となります．
+
+      この実装を見ると， =Right= しか面倒を見ていません．なぜでしょう．
+      =Either a b= 型がどう定義されているか思い出してみると:
+      #+BEGIN_SRC haskell
+        data Either a b = Left a | Right b
+      #+END_SRC
+
+      もし両方に =f= を適用したいと思ったら，
+      =a= と =b= の型は同じでなくてはなりません．
+      もし， =a= が数値で， =b= が文字列だった場合はうまく動きません．
+      =fmap= が =Either= を操作する場合は，
+      1つ目の引数は変化していないのに対して，2つ目は変化しています．
+      1つ目のパラメータは， =Left= 値構成子によって実体化されていることも分かります．
+
+      
+      =Data.Map= の関数(連想配列)も =Functor= といえます．値を保持しているからです．
+      =Map k v= の場合， =fmap= は，
+      : v -> v'
+      という関数を取り，
+      : Map k v
+      について適用して
+      : Map k v'
+      を返します．
+      どういうわけで =Map k= が =Functor= の一員になるのかについては，自分で確認してみてください．
+
+      =Functor= を取り上げて，型クラスが如何に高次の概念を表現しうるかについて見てきました．
+      また，型を部分適用したり，型クラスのインスタンスを作ることも練習しました．
+      後の章では， =Functor= が満たすべき条件についても見てみます．
+
+***** Kinds and some type-foo
+      [[http://learnyouahaskell.com/making-our-own-types-and-typeclasses#kinds-and-some-type-foo][(http://learnyouahaskell.com/making-our-own-types-and-typeclasses#kinds-and-some-type-foo)]]
+
+      型構成子は，他の型を引数に取って具象データ型を作ります．
+      この振舞いは，関数に引数を適用して値を得ることを想起させます．
+      どちらも部分適用が可能です．ここでは，型がどのように型構成子に適用されるかについて見てみます．
+      これは，これまで私達が見てきた，値がどのように関数に適用されるかと同じです．
+      ここの節に書いてある事が当面理解できなくても問題ないですが，
+      理解できると，型システム関する一貫した見通しを得られることでしょう．
+      3 や "YEAR" ， =takeWhile= (関数)も何らかの型を持っています．
+      型とは，値に付けられたラベルで，
+      それによって，値に対する理(ことわり)を得ます．
+
+      型も同様にラベルを持っていて，それをカインド( *kind* ) と呼びます．
+      カインドは，だいたい，型の型という感じです．
+      混乱しそうですが，実にクールなコンセプトです．
+      カインドは，何で，何に役に立つ? GHCI に =:k= コマンドを投げてみましょう．
+      #+BEGIN_SRC haskell
+        ghci> :k Int  
+        Int :: *  
+      #+END_SRC
+      星?(=*=)． =*= は，この型は具象データ型であることを示しています．
+      具象データ型は，型引数を取らない型です．
+      すべての値(value)は，何らかの具象データ型に属しています．
+      =*= を声に出して読むなら，「型(type)」か「スター(*)」でしょうね．
+
+      では， =Maybe= は?
+      #+BEGIN_SRC haskell
+        ghci> :k Maybe  
+        Maybe :: * -> *  
+      #+END_SRC
+
+      これから分かることは，
+      =Maybe= 型構成子は，1つの具象データ型(たとえば， =Int= ) を引数に取り，
+      =Maybe Int= のような具象データ型を返すということです．
+
+      =Int -> Int= が =Int= 型の引数を取って =Int= 型の値を返すのと同じように，
+      =* -> *= は，具象データ型を引数に取って，具象データ型を返すと解釈します．
+      
+      では， =Maybe= に型引数を適用して，カインドがどうなるか確認します．
+      #+BEGIN_SRC haskell
+        ghci> :k Maybe Int  
+        Maybe Int :: *  
+      #+END_SRC
+
+      思った通り．これは，以下の2つの関係に似ています．
+      : :t isUpper
+      : :t isUpper 'A'
+
+      別のカインドを確認してみます．
+      #+BEGIN_SRC haskell
+        ghci> :k Either  
+        Either :: * -> * -> *  
+      #+END_SRC
+      部分適用をして，
+      #+BEGIN_SRC haskell
+        ghci> :k Either String
+        Either String :: * -> *
+        ghci> :k Either String Int
+        Either String Int :: *
+      #+END_SRC
+      =Either= を =Functor= 型クラスにしたときに部分適用を使いましたね．
+      なぜなら， =Functor= は，型引数を1つ取るのに対して， =Either= は2つだったからですよね．
+      言い換えると， =Functor= は =* -> *= なるカインドを欲っしています．
+      しかし， =Either= は， =* -> * -> *= なので，
+      =Either= に部分適用させて =* -> *= を得るのです．
+      
+      ここで，もう一度 =Functor= の定義について見てみます．
+      #+BEGIN_SRC haskell
+        class Functor f where   
+          fmap :: (a -> b) -> f a -> f b        
+      #+END_SRC
+      =f= なる型引数は，1つの具象データ型を引数に取って，
+      具象データ型を作ることが分かります．
+
+      ここまで学んだ知識を使えば，
+      =Functor= と友達になりたい型は， =* -> *= というカインドを持たなければならないと分かります．
+
+      カインドを意識して，何か作ってみましょう．
+      #+BEGIN_SRC haskell
+        class Tofu t where  
+          tofu :: j a -> t a j  
+      #+END_SRC
+      + =j a= は =tofu= の引数なので，具象データ型のはずです．
+        つまり， =*= です． =a= が =*= だと仮定すると，
+        =j= は =* -> *= です．
+      + =t a j= もまた =*= であるはずです．
+      + =a= は =*= で， =j= は =* -> *= なので，
+        =t= は =* -> (* -> *) -> *= でしょう．
+      OK．では， =* -> (* -> *) -> *= なるカインドを持つ型を作ってみましょう．
+      #+BEGIN_SRC haskell
+        data Frank a b  = Frank {frankField :: b a} deriving (Show)
+      #+END_SRC
+      この代数データ型 (ADT: algebraic data type) のフィールドは，データを保持するのに利用されるので，
+      カインド =*= でなければなりません．
+      つまり =a= を =*= だとすると， =b= は 1つの型引数を取るので， =* -> *= となります．
+      =Frank= は， =a= と =b= を引数として取るので， =Frank= 
+      は =* -> (* -> *) -> *= となります．ここで，最初の =*= は =a= で， =(* -> *)= は， =b=
+      です． ここで =Frank= 型の値を定義してその型をチェックしてみましょう．
+
+      #+BEGIN_SRC haskell
+        ghci> :t Frank {frankField = Just "HAHA"}
+        Frank {frankField = Just "HAHA"} :: Frank [Char] Maybe
+        ghci> :t Frank {frankField = Node 'a' EmptyTree EmptyTree}
+        Frank {frankField = Node 'a' EmptyTree EmptyTree} :: Frank Char Tree
+        ghci> :t Frank {frankField = "YES"}
+        Frank {frankField = "YES"} :: Frank Char []
+      #+END_SRC
+
+      =frankField= は =a b= なる型なので，値の型も似た形になるはず．
+      =たとえば Just "HAHA" で= =Maybe [Char]= 型や =['Y', 'E', 'S']= で =[Char]= 型のような値を持つことができます．
+      =Frank= 型の値は， =Frank= のカインドと一致しています． =[Char]= は， =*= というカインドで，
+      =Maybe= は， =* -> *= です．
+      全ての =Frank blah blaah= のカインドは， =*= です．
+      
+      =Frank= を =Tofu= のインスタンスにするのは簡単です． =tofu= は =j a= を取って，(例えば =Maybe Int=) そして，
+      =t a j= を返します．したがって， =Frank= を =t= (原文は =j= だが，おそらく間違い) と置けば，
+      結果の型は =Frank Int Maybe= です．
+
+      #+BEGIN_SRC haskell
+        instance Tofu Frank where
+          tofu x = Frank x
+      #+END_SRC
+
+      #+BEGIN_SRC haskell
+        ghci> tofu (Just 'a') :: Frank Char Maybe
+        Frank {frankField = Just 'a'}
+        ghci> tofu ["HELLO"] :: Frank [Char] []
+        Frank {frankField = ["HELLO"]}
+        ghci> :t Frank (Just "HAHA")
+        Frank (Just "HAHA") :: Frank [Char] Maybe
+      #+END_SRC
+
+      もう少し訓練してみます．
+
+      #+BEGIN_SRC haskell
+        data Barry t k p = Barry { yabba :: p, dabba :: t k }
+      #+END_SRC
+      これを =Functor= の一員にしたいとします． =Functor= のカインドは， =* -> *=  ですが，
+      =Barry= は，違います． =Barry= のカインドは何でしょうか?
+      =something -> something -> something -> *= となります．
+      =p= は =*= でしょうね(ADTのフィールドなので)．
+      =k= も =*= と仮定すると，
+      =t= は =* -> *= です．
+      =something= を置き換えると，
+      =(* -> *) -> * -> * -> *= です．GHCI で調べてみると，
+      #+BEGIN_SRC haskell
+        ghci> :k Barry
+        Barry :: (* -> *) -> * -> * -> *
+      #+END_SRC
+      思った通りだ．満足．
+      
+      そうすると， =Functor= の要求するカインド =* -> *= に合わせるためには，最初の2つを食べさせことになるので，
+      インスタンス定義の書き出しは，以下のようになるはず:
+      #+BEGIN_SRC haskell
+        instance Functor (Barry a b) where...
+      #+END_SRC
+
+      =fmap= の定義を =Barry= 用だと思って眺めると，
+      =fmap :: (a -> b) -> Barry c d a -> Barry c d b= のように見える．
+      =Functor= の =f= を =Barry c d= に置き換えただけ．
+      #+BEGIN_SRC haskell
+        instance Functor (Barry a b) where
+          fmap f (Barry {yabba = x, dabba = y}) = 
+            Barry {yabba = f x, dabba = y}
+      #+END_SRC
+      =f= は，最初のフィールドにだけmapすると分かる．
+
+***  [[http://learnyouahaskell.com/input-and-output][9]]. Input and Output 
+     Haskell は純粋関数型言語であると説明してきました．副作用がないということは素晴しいことです．
+     しかし，もし関数がその副作用として世界を一切変えることが許されないとすれば，
+     関数の実行結果をどうやって外界に知らせることができるのでしょうか．
+     結果を出力するということは外部デバイスの状態を変化させてしまうということです．
+
+     失望することはありません．Haskell では pure な関数とそうでない関数をきちんと分離するよい仕組みが用意されているのです．
+
+***** Hello, world!
+      [[http://learnyouahaskell.com/input-and-output#hello-world][(http://learnyouahaskell.com/input-and-output#hello-world)]] 
+
+      ここでやっと，(GHCI) ではなく，リアルに(それ単体で)動く Haskell プログラムを作ることにします!!
+      好きなエディタで，以下のファイルを作ります．
+      #+BEGIN_SRC haskell
+        main = putStrLn "hello, world"
+      #+END_SRC
+      =main= という関数を定義しました．
+      何の変哲もないもの(run of the mill)に見えます．
+      =helloworld.hs= というファイルにセーブして，コンパイルします．
+      #+BEGIN_EXAMPLE
+        $ ghc --make helloworld
+        [1 of 1] Compiling Main ( helloworld.hs, helloworld.o )
+        Linking helloworld ...
+      #+END_EXAMPLE
+      おっけー．
+      #+BEGIN_EXAMPLE
+        $ ./helloworld
+        hello, world
+      #+END_EXAMPLE
+      やった!! 何て退屈なんだ!!
+      =putStrLn= の型を調べます．
+      #+BEGIN_SRC haskell
+        ghci> :t putStrLn
+        putStrLn :: String -> IO ()
+        ghci> :t putStrLn "hello, world"
+        putStrLn "hello, world" :: IO ()
+      #+END_SRC
+      =printStrLn= は特に意味のある戻り値を持たないので，
+      ダミーの戻り値として， =()= が戻って来ます．
+
+      では，I/O アクションは，いつ実行されるのでしょうか．そこで，
+      =main= という名前が意味を持ちます．
+      I/O アクションというのは，それに =main= 
+      という名前を付けてコンパイル，実行されたときに実施されます．
+
+      プログラム中で1つのI/Oアクションだけという訳にはいかないでしょう．
+      そのために，I/O には， =do= という構文があって，複数のI/Oを1つにくっつけます．
+      #+BEGIN_SRC haskell
+        main = do
+          putStrLn "Hello, what's your name?"
+          name <- getLine
+          putStrLn ("Hey " ++ name ++ ", you rock!")
+      #+END_SRC
+      この表現は，命令型プログラムに非常に近いですね．
+      =do= は，中の最後の =IO ()= を戻り値にするので，型は =IO ()= です．
+
+      =main= は =main :: IO something= という型シグネチャを持ちます．
+      =something= は何らかの具象データ型です．
+      通常，プログラム中で  =main= に明示的に型を宣言したりはしません．
+      ここで気になるのは2行目: 
+      : name <- getLine
+      これは， 1行読んで， =name= に格納しているように見えます．
+      では， =getLine= の型は?
+      #+BEGIN_SRC haskell
+        ghci> :t getLine
+        getLine :: IO String
+      #+END_SRC
+      =getLine= は， =String= を結果として持つ I/O アクションです．
+      I/O アクションは，脚の付いた箱のようなもので，
+      現実世界に出掛けて行って何らかの仕事をして，結果を箱に入れて帰ってきます．
+      箱の中から値を取り出すには =<-= を使います．
+
+      そして，I/O アクションからデータを持ち出したいなら，
+      それは，別の I/O アクションの中に居るときだけなのです．
+      これによって，Haskell は純粋でないコードを純粋な部分から分離しているのです．
+
+      =getLine= は純粋ではありません．なぜなら2度実行すると同じ値が返ってくるとは限らないからです．
+      そのため，IO 構成子によって汚染されているといい，I/O コードの中でしかその値を取り出すことができません．
+      I/O コード内での演算は，I/O 汚染されているコードから得られる結果なので，これも汚染されていると考えることができます．
+
+      ここで， *汚染されている* といいましたが，I/Oの結果を純粋関数の入力として全く使用しないということではありません．
+      =name= は =<-= によって，単なる =String= となっています．
+      あなたの名前 =name= を引数として将来を予言する =tellForetune= という関数があると，
+      #+BEGIN_SRC haskell
+        main = do
+          putStrLn "Hello, what's your name?"
+          name <- getLine
+          putStrLn $ "this is your future: " ++ 
+            tellFortune name
+      #+END_SRC
+      =tellForetune= は I/O のことについては一切知る必要がありません．
+      =String -> String= な関数です．
+
+      では，これは正しい?
+      #+BEGIN_SRC haskell
+        nameTag = "Hello, my name is " ++ getLine
+      #+END_SRC
+      いいえ． =++= は =String= と =IO String= を結合できないです．
+      まず =IO String= を =String= にしなければいけません． =name <- getLine= のような操作が必要になるわけですが，
+      それは，I/O アクションの中だけでしかできなのです．
+      純粋ではない値を扱うためには，純粋ではない環境の中だけに限られるのです．
+      純粋でない環境は，拡散していくので，I/O アクションをできるだけ狭い範囲に閉じ込めることが最善の策 (in our best interest)
+      なのです．
+
+      I/O アクションは，結果をその中に閉じ込めて戻ってきます．すべての値を取り出すように以下のようにも書けます．
+      #+BEGIN_SRC haskell
+        main = do
+          foo <- putStrLn "Hello, what's your name?"
+          name <- getLine
+          putStrLn ("Hey " ++ name ++ ", you rock!")
+      #+END_SRC
+      しかし， =putStrLn= からは =()= が返ってくるだけなので，ムダなのでやりません．
+      最後の行には =<-= を使うことができないのですが，この理由は後にモナドの所で説明します．
+
+      初心者がよく間違う例:
+      #+BEGIN_SRC haskell
+        name = getLine
+      #+END_SRC
+      これは，単に =getLine= に =name= という別名を付けているだけになります．
+      I/O アクションが実際に実行されるのは，
+      + main という名前が与えられたとき
+      + do ブロックで作った大きな I/O アクションの中にあるとき
+      do ブロックは，いくつかの I/O をアクションを1つにまとめることができて，
+      それによってまとめられた I/O アクションは，また別の do ブロックの一部になったりします．
+      いずれにしても，最終的に =main= につながっていれば，その I/O は実行されます．
+
+      もう1つ GHCI で I/O アクションを入力した場合です．
+      #+BEGIN_SRC haskell
+        ghci> putStrLn "HEEY"  
+        HEEY        
+      #+END_SRC
+
+      以下，let を使った， do ブロックの中で =let= を並べるいい例です．
+      #+BEGIN_SRC haskell
+        import Data.Char
+        
+        main = do
+          putStrLn "What's your first name?"
+          firstName <- getLine
+          putStrLn "What's your last name?"
+          lastName <- getLine
+          let bigFirstName = map toUpper firstName
+              bigLastName = map toUpper lastName
+          putStrLn $ "hey " ++ bigFirstName ++ 
+            " " ++ bigLastName ++ ", how are you?"
+      #+END_SRC
+
+      次の例は，1行読込んで，単語を逆順にして出力するプログラムです．
+      #+BEGIN_SRC haskell
+        main = do   
+          line <- getLine  
+          if null line  
+            then return ()  
+            else do  
+              putStrLn $ reverseWords line  
+              main  
+        
+        reverseWords :: String -> String  
+        reverseWords = unwords . map reverse . words  
+      #+END_SRC
+
+      Tips:
+      #+BEGIN_EXAMPLE
+        ghc --make helloworld
+        ./helloworld
+      #+END_EXAMPLE
+      の代わりに
+      #+BEGIN_EXAMPLE
+        runhaskell helloworld.hs
+      #+END_EXAMPLE
+      としてもいいです．
+
+      =reverseWords= は，こうも書けます:
+      #+BEGIN_SRC haskell
+        reverseWords st = unwords (map reverse (words st))
+      #+END_SRC
+
+      次に =main= を見てみます．
+      Haskell の =if= は，かならず =else= が必要でした．しかも同じ型を返すので，
+      =if= /condition/ =then= /IO action/ =else= /IO action/ の形でなければなりません．
+      =else= の後には，ただ1つの I/O アクションが来るので，以下のように書けます．
+      #+BEGIN_SRC haskell
+        else (do
+          putStrLn $ reverseWords line
+          main)
+      #+END_SRC
+      =null line= が true だった場合，つまり =return ()= は何をするのでしょうか．
+      =return ()= は命令型のそれとは全く異なるものです．
+      =return= は， 純粋な値を IO の箱で包むはたらきをします．
+      つまり， =(return "hahaha")= は， =IO String= の型を持ちます．
+
+      =return= は do ブロックを終わらせる働きはありません．
+      以下のプログラムは普通に最後まで実行されます．
+      #+BEGIN_SRC haskell
+        main = do
+          return ()
+          return "HAHAHA"
+          line <- getLine
+          return "BLAH BLAH BLAH"
+          return 4
+          putStrLn line
+      #+END_SRC
+
+      I/O の箱を作る =return= と，そこから値を取り出す  =<-= 使って，以下のようにも書けます．
+      #+BEGIN_SRC haskell
+        main = do
+          a <- return "hell"
+          b <- return "yeah!"
+          putStrLn $ a ++ " " ++ b
+      #+END_SRC
+      しかし，これは冗長です． =let= を使って，以下のように書けます:
+      #+BEGIN_SRC haskell
+        main = do
+          let a = "hell"
+              b = "yeah"
+          putStrLn $ a ++ " " ++ b
+      #+END_SRC
+
+      ここからは，I/O を扱う際に便利な関数をいくつか見て行きましょう．
+******* putStr
+        =putStrLn= の改行なし版
+        #+BEGIN_SRC haskell
+          main = do putStr "Hey, "
+                    putStr "I'm "
+                    putStrLn "Andy!"
+        #+END_SRC
+        実行結果:
+        #+BEGIN_EXAMPLE
+          $ runhaskell putstr_test.hs
+          Hey, I'm Andy!
+        #+END_EXAMPLE
+        
+******* putChar
+        1文字出力
+        #+BEGIN_SRC haskell
+          main = do putChar 't'
+                    putChar 'e'
+                    putChar 'h'
+        #+END_SRC
+        実行結果:
+        #+BEGIN_EXAMPLE
+          $ runhaskell putchar_test.hs
+          teh
+        #+END_EXAMPLE
+        =putStr= は， =putChar= によって再帰的に定義されています．基底部は，空文字列です．
+        #+BEGIN_SRC haskell
+          putStr :: String -> IO ()
+            putStr [] = return ()
+            putStr (x:xs) = do
+              putChar x
+              putStr xs
+        #+END_SRC
+
+******* print 
+        =Show= 型クラスに属する値(つまり自身の文字列表現を持っている型)を引数に取って，
+        =show= を呼び出し，結果の文字列を表示します．
+        つまり， =putstrLn .show= とほぼ同じです．
+
+        #+BEGIN_SRC haskell
+          main = do print True  
+                    print 2  
+                    print "haha"  
+                    print 3.2  
+                    print [3,4,3]
+        #+END_SRC
+        実行結果:
+        #+BEGIN_EXAMPLE
+          $ runhaskell print_test.hs
+          True  
+          2  
+          "haha"  
+          3.2  
+          [3,4,3]
+        #+END_EXAMPLE
+        これはとっても便利．
+        GHCI 上での実行結果表示には， =print= が使われています．
+        #+BEGIN_SRC haskell
+          ghci> 3
+          3
+          ghci> print 3
+          3
+          ghci> map (++"!") ["hey","ho","woo"]
+          ["hey!","ho!","woo!"]
+          ghci> print (map (++"!") ["hey","ho","woo"])
+          ["hey!","ho!","woo!"]
+        #+END_SRC
+
+******* getChar
+        1文字入力関数です．
+        =getChar :: IO Char= という型シグネチャを持ちます．
+        バッファリングのため，ユーザがリターンキーを叩くまで読まれないので注意．
+        #+BEGIN_SRC haskell
+          main = do
+            c <- getChar
+            if c /= ' '
+              then do
+                putChar c  
+                main  
+              else return ()
+        #+END_SRC
+        実際に実行してみるといいよ．
+
+******* when
+        when は =Control.Monad= に定義されています (=import Control.Monad= してください)．
+        真理値と I/O アクションを引数に取り，真理値が真の場合は I/O アクションを返し，
+        偽の場合は， =return ()= します．
+        #+BEGIN_SRC haskell
+          import Control.Monad
+          
+          main = do
+            c <- getChar
+            when (c /= ' ') $ do
+              putChar c
+              main
+        #+END_SRC
+        =if= /something/ =then do= /some IO action/ =else return ()= のパターンを簡潔に書けます．
+
+******* sequence 
+        sequence は I/O アクションのリストを取って，それらを順番に実行するような I/O アクションを返します．
+        その I/O アクションの結果は，個々の I/O アクションの実行結果のリストです．
+        つまり =sequence :: [IO a] -> IO [a]= となります．
+        #+BEGIN_SRC haskell
+          main = do
+            a <- getLine
+            b <- getLine
+            c <- getLine
+            print [a,b,c]
+        #+END_SRC
+        =sequence= を使うと:
+        #+BEGIN_SRC haskell
+          main = do
+          rs <- sequence [getLine, getLine, getLine]
+          print rs
+        #+END_SRC
+
+        =sequence= をよく使う例は，リストに対して =print= や =getLine= をマップしたい場合です．
+        =map print [1,2,3,4]= は I/O アクションを生成しません．これは，I/O アクションのリストを生成するだけで，
+        =[print 1, print 2, print 3, print 4]= と書いたのと同じだからです．
+        I/OアクションのリストをI/Oアクションに変換したいなら， =sequence= が必要です．
+        #+BEGIN_SRC haskell
+          ghci> sequence (map print [1,2,3,4,5])  
+          1  
+          2  
+          3  
+          4  
+          5  
+          [(),(),(),(),()]          
+        #+END_SRC
+******* mapM と mapM_
+        I/O アクションを返すような関数をリストにマップして，
+        結果をシーケンスにすることがよくあります．
+        そのために =mapM= と =mapM_= が用意されています．
+        =mapM_= は，I/O の結果を捨てます．
+        #+BEGIN_SRC haskell
+          ghci> mapM print [1,2,3]
+          1
+          2
+          3
+          [(),(),()]
+          ghci> mapM_ print [1,2,3]
+          1
+          2
+          3 
+        #+END_SRC
+
+******* forever
+        I/O アクションを取り，それを永遠に繰り返す I/O アクションを返します．
+        =Control.Monad= に属しています．
+        #+BEGIN_SRC haskell
+          import Control.Monad
+          import Data.Char
+          
+          main = forever $ do
+            putStr "Give me some input: "
+            l <- getLine
+            putStrLn $ map toUpper l
+        #+END_SRC
+        上の例は，ユーザからの入力を受け取り続けて，大文字にして返します．
+
+******* forM
+        =forM= (=Control.Monad= に属しています)は， =mapM= に似ていますが，
+        引数の順番が逆になっています．最初の引数は，リストで，2番目がリストにマップ適用したい関数です．
+        何が有用なのでしょう．
+        #+BEGIN_SRC haskell
+          import Control.Monad
+              
+          main = do
+            colors <- forM [1,2,3,4] (\a -> do
+              putStrLn $ "Which color do you assoc with the num " 
+                ++ show a ++ "?"
+              color <- getLine
+              return color)
+            putStrLn "The colors you associate with 1,2,3,4 are: "
+            mapM putStrLn colors
+        #+END_SRC
+        =(\a -> do ... )= は，数を取って I/O アクションを返す関数です．
+        ここで，
+        #+BEGIN_SRC haskell
+          color <- getLine
+          return color)
+        #+END_SRC
+        の部分は，冗長です． =<-= で取り出して， =return= でまた包んでいるからです．
+        =getLine= だけで十分です．
+
+        #+BEGIN_EXAMPLE
+          $ runhaskell form_test.hs
+          Which color do you associate with the number 1?
+          white
+          Which color do you associate with the number 2?
+          blue
+          Which color do you associate with the number 3?
+          red
+          Which color do you associate with the number 4?
+          orange
+          The colors that you associate with 1, 2, 3 and 4 are:
+          white
+          blue
+          red
+          orange
+        #+END_EXAMPLE
+        =forM= がなくても (=mapM= があれば) いいのですが， =forM= を使うと可読性が上がる場合があります．
+        =do= の書式を使ってスポット的にマップしたい内容を(長々と)書きたい場合には =forM= が向いています．
+
+        最後の1行は， =forM colors putStrLn= とも書けますね．
+
+        I/O アクションは，Haskell の他の値と同じように関数の引数に取ったり，戻り値にしたりできます．
+        違うのは， =main= 関数の下にあると (GHCI の行にあると) 実行されることです．
+        それによって，画面に文字が出たり，スピーカから音が出たりするのです．
+        個々のI/O アクションは，リアルワールドから取得した結果を箱に詰めて持ち帰るのです．
+

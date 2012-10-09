@@ -1,0 +1,121 @@
+#+TITLE:     演習問題と解答(16) - 乃村研Haskell勉強会2012
+#+AUTHOR:    乃村 能成
+#+EMAIL:     nom@cs.okayama-u.ac.jp
+#+DATE:      2012-06-25
+#+SETUPFILE: options/default.org
+
+* 演習問題と解答(08)
+*** 出題範囲
+    + 13章 Writer? I hardly know her!  から
+    + 13章 Error error on the wall まで
+
+    [[file:t16-13-13-nom.org][輪講資料]]へ
+
+*** 問題
+***** 問題1 
+      以下の例は， =Writer= について =do= 表記を用いて，2つの値のかけ算を求めている．
+      これを lambda 表記( =->= の入れ子形式)で展開せよ 
+      #+BEGIN_SRC haskell
+        import Control.Monad.Writer
+
+        logNumber :: Int -> Writer [String] Int
+        logNumber x = writer (x, ["Got number: " ++ show x])
+
+        multWithLog :: Writer [String] Int
+        multWithLog = do
+            a <- logNumber 3
+            b <- logNumber 5
+            return (a*b)
+      #+END_SRC
+
+***** 問題2
+      =Maybe= モナドの学習時に綱渡り中にバランス棒に鳥が乗る話があった．
+
+      #+BEGIN_SRC haskell :results output
+        import Control.Monad.Error
+        
+        type Birds = Int
+        type Pole = (Birds,Birds)
+                        
+        landLeft :: Birds -> Pole -> Maybe Pole
+        landLeft n (left,right)
+            | abs ((left + n) - right) < 4 = Just (left + n, right)
+            | otherwise                    = Nothing
+        
+        landRight :: Birds -> Pole -> Maybe Pole
+        landRight n (left,right)
+            | abs (left - (right + n)) < 4 = Just (left, right + n)
+            | otherwise = Nothing
+        
+        main :: IO ()
+        main = do
+          print $ return (0,0) >>= landRight 2 >>= landLeft 2 >>= landRight 2  
+          print $ return (0,0) >>= landLeft 1 >>= landRight 4 >>= landLeft (-1) >>= landRight (-2) 
+      #+END_SRC
+
+      実行結果:
+      #+RESULTS:
+      : Just (2,4)
+      : Nothing
+
+      これを =Either= で実現し，綱渡りが失敗したときに，
+      棒の左右に載っていた鳥の数が分かるようにせよ．
+
+*** 解答例
+***** 解答1 
+     #+BEGIN_SRC haskell :results output
+       import Control.Monad.Writer
+       
+       logNumber :: Int -> Writer [String] Int
+       logNumber x = writer (x, ["Got number: " ++ show x])
+       
+       multWithLog :: Writer [String] Int
+       multWithLog = logNumber 3 >>= (\a ->
+                     logNumber 5 >>= (\b ->
+                     return (a*b)))
+       
+       main = do
+         print $ runWriter multWithLog
+     #+END_SRC
+
+     実行結果:
+     #+RESULTS:
+     : (15,["Got number: 3","Got number: 5"])
+
+     ここで，
+     #+BEGIN_SRC haskell
+       ghci> :t (>>=)
+       (>>=) :: Monad m => m a -> (a -> m b) -> m b
+       
+       ghci> runWriter (return 15 :: Writer [String] Int)
+       (15,[])
+     #+END_SRC
+     であることに注意．
+
+***** 解答2
+      #+BEGIN_SRC haskell :results output
+        import Control.Monad.Error
+        
+        type Birds = Int
+        type Pole = (Birds,Birds)
+                        
+        landLeftE :: Birds -> Pole -> Either String Pole
+        landLeftE n (left,right)
+            | abs ((left + n) - right) < 4 = Right (left + n, right)
+            | otherwise                    = Left $ show (left + n, right)
+        
+        landRightE :: Birds -> Pole -> Either String Pole
+        landRightE n (left,right)
+            | abs (left - (right + n)) < 4 = Right (left, right + n)
+            | otherwise                    = Left  $ show (left, right + n)
+        
+        main :: IO ()
+        main = do
+          print $ return (0,0) >>= landRightE 2 >>= landLeftE 2 >>= landRightE 2
+          print $ return (0,0) >>= landLeftE 1 >>= landRightE 4 >>= landLeftE (-1) >>= landRightE (-2) 
+      #+END_SRC
+
+      実行結果:
+      #+RESULTS:
+      : Right (2,4)
+      : Left "(0,4)"

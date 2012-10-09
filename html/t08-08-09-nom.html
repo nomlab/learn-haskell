@@ -1,0 +1,1619 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
+<head>
+<title>輪講資料(08) - 乃村研Haskell勉強会2012</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="title" content="輪講資料(08) - 乃村研Haskell勉強会2012"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2012-06-25"/>
+<meta name="author" content="乃村 能成"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  div.inlinetask {
+    padding:10px;
+    border:2px solid gray;
+    margin:10px;
+    background: #ffffcc;
+  }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style><style type="text/css">
+<!--/*--><![CDATA[/*><!--*/
+html {
+    font-family:'ヒラギノ丸ゴ Pro','Hiragino Maru Gothic Pro','メイリオ',Meiryo,'ＭＳ Ｐゴシック',sans-serif;
+    font-size: 12pt;
+}
+pre {
+    border: 1pt solid #AEBDCC;
+    background-color: #F3F5F7;
+    padding: 5pt;
+    font-family: courier, monospace;
+    font-size: 90%;
+    overflow:auto;
+}
+table, th, td {
+    border: 1px #000000 solid;
+    border-collapse: collapse;
+}
+
+td, th {
+    vertical-align: top;
+}
+
+dt {
+    font-weight: bold;
+    color: green;
+}
+
+div.figure {
+    padding: 0.5em;
+}
+
+div.figure p {
+    text-align: center;
+}
+
+.linenr {
+    font-size: smaller;
+}
+
+.code-highlighted {
+    background-color:#ffff00;
+}
+
+/* my settings */
+
+body {
+    color: black;
+    // background: #d1eeee;
+    color: black;
+    line-height: 1.5;
+    margin-top: 50px;
+    margin-right: 10%;
+    margin-left: 1em;
+    letter-spacing: 2px;
+}
+
+h1 {
+    text-align: center;
+}
+
+pre {
+    padding: 10px 10px 10px 10px;
+    margin: 0px 0px 0px 1em;
+    letter-spacing: 0px;
+    line-height: 1;
+}
+
+h2 {
+    margin-bottom: 2em;
+    border: solid;
+    padding: 0px 10px 2px 10px;
+    border-width: 0px 0px 3px 0.7em;
+    border-color: transparent transparent black black;
+}
+
+h3 {
+    margin-bottom: 2em;
+    border: solid;
+    padding: 0px 10px 2px 10px;
+    border-width: 0px 0px 1px 0.7em;
+    border-color: transparent transparent brown brown;
+}
+
+h4 {
+    border: solid;
+    padding: 0px 10px 2px 10px;
+    border-width: 0px 0px 1px 0.7em;
+    border-color: blue;
+}
+
+h5 {
+    border: solid;
+    padding: 0px 10px 2px 10px;
+    border-width: 0px 0px 1px 0.7em;
+    border-color: green;
+    color: green;
+}
+
+th {
+    font-weight: bold;
+    border: 1px solid #777777;
+    background-color: #8899FF;
+    padding: 3px;
+    border-bottom: 0px;
+    border-right: 0px;
+}
+
+td {
+    border-top: 1px solid #777777;
+    padding: 3px;
+}
+
+tr {
+    background-color: aliceblue;
+}
+
+table {
+    border-spacing: 0px;
+    empty-cells:show;
+    margin-bottom: 6px;
+    border: 1px solid #0000AA;
+    border-top: 0px;
+}
+
+table.layer {
+    text-align: center;
+}
+
+blockquote {
+    border: 1pt solid #AEBDCC;
+    background-color: #F3F5F7;
+    padding: 0px 0px 0px 1em;
+}
+
+td.byteorder {
+    text-align: center;
+}
+
+em {
+    color: red;
+}
+
+b {
+    color: green;
+}
+
+img {
+    border: 1pt solid #AEBDCC;
+    background-color: #F3F5F7;
+}
+
+/* postamble */
+div#postamble {
+    width: 100%;
+    text-align: right;
+    font-size: smaller;
+    border-top: 2px solid #808080;
+    margin-top: 3em;
+    padding: 1em 0em;
+}
+div#postamble p {
+    margin: 0.2em 0em;
+}
+p.creator {
+    color: #a0a0a0;
+}
+/*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="pub/css/text.css">
+
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">輪講資料(08) - 乃村研Haskell勉強会2012</h1>
+
+
+<div id="table-of-contents">
+<h2>目次</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">Learn You a Haskell for Great Good!</a>
+<ul>
+<li><a href="#sec-1-1">8. Making Our Own Types and Typeclasses</a>
+<ul>
+<li><a href="#sec-1-1-1">A yes-no typeclass</a></li>
+<li><a href="#sec-1-1-2">The Functor typeclass</a></li>
+<li><a href="#sec-1-1-3">Kinds and some type-foo</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-2">9. Input and Output</a>
+<ul>
+<li><a href="#sec-1-2-1">Hello, world!</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1">Learn You a Haskell for Great Good!</h2>
+<div class="outline-text-2" id="text-1">
+
+
+</div>
+
+<div id="outline-container-1-1" class="outline-3">
+<h3 id="sec-1-1"><a href="http://learnyouahaskell.com/making-our-own-types-and-typeclasses">8</a>. Making Our Own Types and Typeclasses</h3>
+<div class="outline-text-3" id="text-1-1">
+
+
+</div>
+
+<div id="outline-container-1-1-1" class="outline-4">
+<h4 id="sec-1-1-1">A yes-no typeclass</h4>
+<div class="outline-text-4" id="text-1-1-1">
+
+<p>      <a href="http://learnyouahaskell.com/making-our-own-types-and-typeclasses#a-yes-no-typeclass">(http://learnyouahaskell.com/making-our-own-types-and-typeclasses#a-yes-no-typeclass)</a>
+</p>
+<p>
+      JavaScript の <code>True/False</code> っぽい振舞いをする型クラスを作ってみよう．
+</p><ul>
+<li>JavaScript の <code>if</code> は，条件文内が空でない文字列なら真
+</li>
+<li>Haskell であれば， <code>Bool</code> を使うところ
+</li>
+</ul>
+
+
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">class</span> <span style="color: #228b22;">YesNo</span> a <span style="color: #7f007f;">where</span>
+  yesno <span style="color: #a0522d;">::</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+</pre>
+
+<ul>
+<li><code>YesNo</code> 型クラスは， <code>yesno</code> という1つの関数を定義している
+</li>
+<li><code>a</code> 型の値を1つ取り，それが真っぽい値だったら， <code>True</code> を返す
+</li>
+</ul>
+
+
+<p>
+      次は，型クラスのインスタンス定義．
+      数に関していえば，JS のように非 <code>0</code> を真とするのが自然．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">instance</span> <span style="color: #228b22;">YesNo</span> <span style="color: #228b22;">Int</span> <span style="color: #7f007f;">where</span>
+  yesno 0 <span style="color: #a0522d;">=</span> <span style="color: #228b22;">False</span>
+  yesno <span style="color: #7f007f;">_</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+</pre>
+
+
+<p>
+      リスト(そして文字列)の場合は，それが空なら偽．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">instance</span> <span style="color: #228b22;">YesNo</span> [a] <span style="color: #7f007f;">where</span>
+  yesno <span style="color: #228b22;">[]</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">False</span>
+  yesno <span style="color: #7f007f;">_</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+</pre>
+
+<p>
+      ここで，リスト内の <code>a</code> の具象データ型を指定していないことに注目して．
+      <code>Bool</code> 型は，そのままいける．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">instance</span> <span style="color: #228b22;">YesNo</span> <span style="color: #228b22;">Bool</span> <span style="color: #7f007f;">where</span>
+  yesno <span style="color: #a0522d;">=</span> id
+</pre>
+
+<p>
+      ここで， <code>id</code> とは?
+      これは，引数を1つだけ取って，同じものを返すだけの関数．
+      つまり，以下は同等．
+</p>
+
+
+<pre class="example">yesno True
+id True
+True
+</pre>
+
+
+<p>
+      <code>Maybe a</code> もインスタンスにしてみよう．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">instance</span> <span style="color: #228b22;">YesNo</span> (<span style="color: #228b22;">Maybe</span> a) <span style="color: #7f007f;">where</span>
+  yesno (<span style="color: #228b22;">Just</span> <span style="color: #7f007f;">_</span>) <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+  yesno <span style="color: #228b22;">Nothing</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">False</span>
+</pre>
+
+<p>
+      ここで， <code>a</code> についての型クラス制約は不要．
+      なぜなら， <code>Just</code> と <code>Nothing</code> だけで <code>True/False</code> を決めているから．
+      ただ， <code>Maybe</code> だけではだめで， <code>Maybe a</code> と書く必要があります．
+      <code>Maybe</code> だけでは具象データ型ではないので．
+</p>
+<p>
+      先に定義した <code>Tree a</code> 型(二分探索木)については，空の木を <code>False</code>
+      としましょう．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">instance</span> <span style="color: #228b22;">YesNo</span> (<span style="color: #228b22;">Tree</span> a) <span style="color: #7f007f;">where</span>
+  yesno <span style="color: #228b22;">EmptyTree</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">False</span>
+  yesno <span style="color: #7f007f;">_</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+</pre>
+
+
+<p>
+      信号機はどうだろう? 黄色は進めってことで，
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">instance</span> <span style="color: #228b22;">YesNo</span> <span style="color: #228b22;">TrafficLight</span> <span style="color: #7f007f;">where</span>
+  yesno <span style="color: #228b22;">Red</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">False</span>
+  yesno <span style="color: #7f007f;">_</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+</pre>
+
+
+<p>
+      インスタンスが揃ったので，遊んでみよう．
+</p>
+
+
+<pre class="example">ghci&gt; yesno $ length []  
+False  
+ghci&gt; yesno "haha"  
+True  
+ghci&gt; yesno ""  
+False  
+ghci&gt; yesno $ Just 0  
+True  
+ghci&gt; yesno True  
+True  
+ghci&gt; yesno EmptyTree  
+False  
+ghci&gt; yesno []  
+False  
+ghci&gt; yesno [0,0,0]  
+True  
+ghci&gt; :t yesno  
+yesno :: (YesNo a) =&gt; a -&gt; Bool  
+</pre>
+
+<p>
+      うまくいってる．
+</p>
+<p>
+      では， <code>if</code> 文を模倣してみよう．
+      ただし， <code>YesNo</code> 型クラスのインスタンスを引数に取る．
+</p>
+
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">yesnoIf</span> <span style="color: #a0522d;">::</span> (<span style="color: #228b22;">YesNo</span> y) <span style="color: #a0522d;">=&gt;</span> y <span style="color: #a0522d;">-&gt;</span> a <span style="color: #a0522d;">-&gt;</span> a <span style="color: #a0522d;">-&gt;</span> a
+<span style="color: #0000ff;">yesnoIf</span> yesnoVal yesResult noResult <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">if</span> yesno yesnoVal 
+                                      <span style="color: #7f007f;">then</span> yesResult 
+                                      <span style="color: #7f007f;">else</span> noResult
+</pre>
+
+<p>
+      この関数は， <code>YesNo</code> な値とあと2つの引数を取り，Yes っぽければ，
+      2つの引数の前者，そうでないなら，後者を返します．
+</p>
+
+
+<pre class="example">ghci&gt; yesnoIf [] "YEAH!" "NO!"
+"NO!"
+ghci&gt; yesnoIf [2,3,4] "YEAH!" "NO!"
+"YEAH!"
+ghci&gt; yesnoIf True "YEAH!" "NO!"
+"YEAH!"
+ghci&gt; yesnoIf (Just 500) "YEAH!" "NO!"
+"YEAH!"
+ghci&gt; yesnoIf Nothing "YEAH!" "NO!"
+"NO!"
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1-1-2" class="outline-4">
+<h4 id="sec-1-1-2">The Functor typeclass</h4>
+<div class="outline-text-4" id="text-1-1-2">
+
+<p>      <a href="http://learnyouahaskell.com/making-our-own-types-and-typeclasses#the-functor-typeclass">(http://learnyouahaskell.com/making-our-own-types-and-typeclasses#the-functor-typeclass)</a>
+</p>
+<p>
+      これまで，標準ライブラリの型クラスを見てきました．
+</p><dl>
+<dt>Ord</dt><dd>順番付けできる型のクラス
+</dd>
+<dt>Eq</dt><dd>同値関係を判定できる型のクラス
+</dd>
+<dt>Show</dt><dd>文字列で方言できる型のクラス
+</dd>
+<dt>Read</dt><dd>文字列から変換可能な型のクラス
+</dd>
+</dl>
+
+<p>      ここで， <code>Functor</code> 型クラスを見ます．
+      Functor は，(リストのように)マップ可能な何かを表わしています．
+      実装を覗いてみると:
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">class</span> <span style="color: #228b22;">Functor</span> f <span style="color: #7f007f;">where</span>
+  fmap <span style="color: #a0522d;">::</span> (a <span style="color: #a0522d;">-&gt;</span> b) <span style="color: #a0522d;">-&gt;</span> f a <span style="color: #a0522d;">-&gt;</span> f b
+</pre>
+
+<p>
+      <code>fmap</code> 関数は，これまで見てきた関数とは，ちょっと違います．
+      なぜなら， <code>f a</code> の <code>f</code> は，具象データ型ではなく，
+      <code>a</code> という型を引数に取る型構成子だからです．
+</p>
+<p>
+      つまり， <code>f</code> は， <code>Int</code>, <code>Bool</code>, <code>Maybe String</code> が持つような値を持たない．
+      たとえば， <code>Maybe Int</code> は具象データ型だけど， <code>Maybe</code> は，具象データ型
+      (ここでは <code>Int</code> ) を取る型構成子です．(訳注: リスト <code>[a]</code> は <code>[] a</code> と書けるよね)
+</p>
+<p>
+      とにかく， <code>fmap</code> は，ある型から別の型を得る関数と，
+      ある型が適用された Functor を取り，別の型が適用された Functor を返すのです．
+      <code>map</code> 関数の型シグネチャと比較してみるとよく分かります．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">map</span> <span style="color: #a0522d;">::</span> (a <span style="color: #a0522d;">-&gt;</span> b) <span style="color: #a0522d;">-&gt;</span> [a] <span style="color: #a0522d;">-&gt;</span> [b]
+</pre>
+
+<p>
+      つまり， <code>map</code> は，リスト限定の <code>fmap</code> なのです．
+      リストを Functor のインスタンスにするには，以下のようにします．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">instance</span> <span style="color: #228b22;">Functor</span> <span style="color: #228b22;">[]</span> <span style="color: #7f007f;">where</span>
+  fmap <span style="color: #a0522d;">=</span> map
+</pre>
+
+<p>
+      <code>instance Functor [a]</code> ではないことに注意．
+      <code>fmap :: (a -&gt; b) -&gt; f a -&gt; f b</code> を見ると分かるように，
+      <code>f</code> は，別の型を1つ取る型構成子だからです．
+      <code>[a]</code> は具象データ型なのに対して， <code>[]</code> は， <code>[Int]</code> や <code>[String]</code> や <code>[[String] ]</code> さえ作る
+      型構成子なのです．
+</p>
+<p>
+      リストの <code>fmap</code> は <code>map</code> と同じです．
+</p>
+
+
+<pre class="example">map :: (a -&gt; b) -&gt; [a] -&gt; [b]
+ghci&gt; fmap (*2) [1..3]
+[2,4,6]
+ghci&gt; map (*2) [1..3]
+[2,4,6]
+</pre>
+
+
+<p>
+      箱のように振舞う型が Functor です．リストは無限に続く小部屋です．他に箱っぽいものは?
+      <code>Maybe a</code> がそうです:
+</p><ul>
+<li>中に何も入っていなければ， <code>Nothing</code>
+</li>
+<li>"HAHA" が入っていれば， <code>Just</code> "HAHA"
+</li>
+</ul>
+
+<p>      定義を見ると:
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">instance</span> <span style="color: #228b22;">Functor</span> <span style="color: #228b22;">Maybe</span> <span style="color: #7f007f;">where</span>
+  fmap f (<span style="color: #228b22;">Just</span> x) <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Just</span> (f x)
+  fmap f <span style="color: #228b22;">Nothing</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Nothing</span>
+</pre>
+
+<p>
+      しつこいけど， <code>instance Functor Maybe</code> です <code>instance Functor (Maybe m)</code> じゃなくてね．
+</p>
+<p>
+      心の中で <code>f s</code> を <code>Maybe s</code> に置き換えると，
+      <code>fmap</code> は， <code>(a -&gt; b) -&gt; Maybe a -&gt; Maybe b</code>
+      となり，OKです．しかし， <code>f</code> を <code>(Maybe m)</code> で置き換えると，
+      <code>(a -&gt; b) -&gt; Maybe m a -&gt; Maybe m b</code> となって変です．
+      なぜなら， <code>Maybe</code> は，1つしか引数を取らないからです．
+</p>
+<p>
+      とにかく， <code>fmap</code> の実装は，とてもシンプルでしょ．
+      <code>Nothing</code> という空の値なら， <code>Nothing</code> を返します．
+      空の箱からは，空の箱．もし， <code>Just</code> 付きの値であれば，
+      その <code>Just</code> の中の値に <code>f</code> を適用する．
+</p>
+
+
+
+<pre class="example">ghci&gt; fmap (++ " HEY GUYS IM INSIDE THE JUST") (Just "Something serious.")
+Just "Something serious. HEY GUYS IM INSIDE THE JUST"
+ghci&gt; fmap (++ " HEY GUYS IM INSIDE THE JUST") Nothing
+Nothing
+ghci&gt; fmap (*2) (Just 200)
+Just 400
+ghci&gt; fmap (*2) Nothing
+Nothing
+</pre>
+
+
+<p>      
+      別の Functor の例に， <code>Tree a</code> 型があります．
+      <code>Tree</code> も見方によっては，箱と考えることができますし，
+      <code>Tree</code> のコンストラクタは，引数を1つ取るからです．
+      <code>fmap</code> を <code>Tree</code> 専用の関数だと思って見ると， <code>fmap</code> のシグネチャは，
+      <code>(a -&gt; b) -&gt; Tree a -&gt; Tree b</code> となります．
+      ここでの <code>fmap</code> は，再帰で書けそうです．
+</p><ul>
+<li>空の木に関しては，空を返す
+</li>
+<li>空でないなら
+<ul>
+<li>ルートノードは，もとのルートノードに <code>f</code> を適用したもの
+</li>
+<li>左部分木は，元の左部分木に <code>fmap</code> を適用したもの
+</li>
+<li>右部分木は，元の右部分木に <code>fmap</code> を適用したもの
+</li>
+</ul>
+
+</li>
+</ul>
+
+<p>      となりそうです．
+</p>
+
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">instance</span> <span style="color: #228b22;">Functor</span> <span style="color: #228b22;">Tree</span> <span style="color: #7f007f;">where</span>
+  fmap f <span style="color: #228b22;">EmptyTree</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">EmptyTree</span>
+  fmap f (<span style="color: #228b22;">Node</span> x leftsub rightsub) <span style="color: #a0522d;">=</span> 
+    <span style="color: #228b22;">Node</span> (f x) (fmap f leftsub) (fmap f rightsub)
+</pre>
+
+<p>
+      ナイス!
+</p>
+<p>
+      では， <code>Either a b</code> はどう? Functor になれそう?
+      <code>Either</code> は引数を2つ取るので，これまでとちょっと違います．
+      でも， <code>Either</code> に引数を1つだけ与えた状態(部分適用した状態) なら?
+      標準ライブラリ中でどのように <code>Either</code> が Functor になっているか見てみると:
+</p>
+
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">instance</span> <span style="color: #228b22;">Functor</span> (<span style="color: #228b22;">Either</span> a) <span style="color: #7f007f;">where</span>
+  fmap f (<span style="color: #228b22;">Right</span> x) <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Right</span> (f x)
+  fmap f (<span style="color: #228b22;">Left</span> x) <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Left</span> x
+</pre>
+
+
+<p>
+      <code>Either a</code> が Functor のインスタンスになっていいます．
+      <code>Either</code> ではないのです．
+      型シグネチャも <code>(b -&gt; c) -&gt; Either a b -&gt; Either a c</code> となります．
+</p>
+<p>
+      この実装を見ると， <code>Right</code> しか面倒を見ていません．なぜでしょう．
+      <code>Either a b</code> 型がどう定義されているか思い出してみると:
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">data</span> <span style="color: #228b22;">Either</span> a b <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Left</span> a <span style="color: #a0522d;">|</span> <span style="color: #228b22;">Right</span> b
+</pre>
+
+
+<p>
+      もし両方に <code>f</code> を適用したいと思ったら，
+      <code>a</code> と <code>b</code> の型は同じでなくてはなりません．
+      もし， <code>a</code> が数値で， <code>b</code> が文字列だった場合はうまく動きません．
+      <code>fmap</code> が <code>Either</code> を操作する場合は，
+      1つ目の引数は変化していないのに対して，2つ目は変化しています．
+      1つ目のパラメータは， <code>Left</code> 値構成子によって実体化されていることも分かります．
+</p>
+
+<p>      
+      <code>Data.Map</code> の関数(連想配列)も <code>Functor</code> といえます．値を保持しているからです．
+      <code>Map k v</code> の場合， <code>fmap</code> は，
+</p><pre class="example">
+v -&gt; v'
+</pre>
+
+<p>      という関数を取り，
+</p><pre class="example">
+Map k v
+</pre>
+
+<p>      について適用して
+</p><pre class="example">
+Map k v'
+</pre>
+
+<p>      を返します．
+      どういうわけで <code>Map k</code> が <code>Functor</code> の一員になるのかについては，自分で確認してみてください．
+</p>
+<p>
+      <code>Functor</code> を取り上げて，型クラスが如何に高次の概念を表現しうるかについて見てきました．
+      また，型を部分適用したり，型クラスのインスタンスを作ることも練習しました．
+      後の章では， <code>Functor</code> が満たすべき条件についても見てみます．
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-1-1-3" class="outline-4">
+<h4 id="sec-1-1-3">Kinds and some type-foo</h4>
+<div class="outline-text-4" id="text-1-1-3">
+
+<p>      <a href="http://learnyouahaskell.com/making-our-own-types-and-typeclasses#kinds-and-some-type-foo">(http://learnyouahaskell.com/making-our-own-types-and-typeclasses#kinds-and-some-type-foo)</a>
+</p>
+<p>
+      型構成子は，他の型を引数に取って具象データ型を作ります．
+      この振舞いは，関数に引数を適用して値を得ることを想起させます．
+      どちらも部分適用が可能です．ここでは，型がどのように型構成子に適用されるかについて見てみます．
+      これは，これまで私達が見てきた，値がどのように関数に適用されるかと同じです．
+      ここの節に書いてある事が当面理解できなくても問題ないですが，
+      理解できると，型システム関する一貫した見通しを得られることでしょう．
+      3 や "YEAR" ， <code>takeWhile</code> (関数)も何らかの型を持っています．
+      型とは，値に付けられたラベルで，
+      それによって，値に対する理(ことわり)を得ます．
+</p>
+<p>
+      型も同様にラベルを持っていて，それをカインド( <b>kind</b> ) と呼びます．
+      カインドは，だいたい，型の型という感じです．
+      混乱しそうですが，実にクールなコンセプトです．
+      カインドは，何で，何に役に立つ? GHCI に <code>:k</code> コマンドを投げてみましょう．
+</p>
+
+
+<pre class="src src-haskell">ghci<span style="color: #0000ff;">&gt;</span> <span style="color: #228b22;">:</span>k <span style="color: #228b22;">Int</span>  
+<span style="color: #228b22;">Int</span> <span style="color: #a0522d;">::</span> <span style="color: #a0522d;">*</span>  
+</pre>
+
+<p>
+      星?(<code>*</code>)． <code>*</code> は，この型は具象データ型であることを示しています．
+      具象データ型は，型引数を取らない型です．
+      すべての値(value)は，何らかの具象データ型に属しています．
+      <code>*</code> を声に出して読むなら，「型(type)」か「スター(*)」でしょうね．
+</p>
+<p>
+      では， <code>Maybe</code> は?
+</p>
+
+
+<pre class="src src-haskell">ghci<span style="color: #0000ff;">&gt;</span> <span style="color: #228b22;">:</span>k <span style="color: #228b22;">Maybe</span>  
+<span style="color: #228b22;">Maybe</span> <span style="color: #a0522d;">::</span> <span style="color: #a0522d;">*</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #a0522d;">*</span>  
+</pre>
+
+
+<p>
+      これから分かることは，
+      <code>Maybe</code> 型構成子は，1つの具象データ型(たとえば， <code>Int</code> ) を引数に取り，
+      <code>Maybe Int</code> のような具象データ型を返すということです．
+</p>
+<p>
+      <code>Int -&gt; Int</code> が <code>Int</code> 型の引数を取って <code>Int</code> 型の値を返すのと同じように，
+      <code>* -&gt; *</code> は，具象データ型を引数に取って，具象データ型を返すと解釈します．
+</p>
+<p>      
+      では， <code>Maybe</code> に型引数を適用して，カインドがどうなるか確認します．
+</p>
+
+
+<pre class="src src-haskell">ghci<span style="color: #0000ff;">&gt;</span> <span style="color: #228b22;">:</span>k <span style="color: #228b22;">Maybe</span> <span style="color: #228b22;">Int</span>  
+<span style="color: #228b22;">Maybe</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">::</span> <span style="color: #a0522d;">*</span>  
+</pre>
+
+
+<p>
+      思った通り．これは，以下の2つの関係に似ています．
+</p><pre class="example">
+:t isUpper
+:t isUpper 'A'
+</pre>
+
+
+<p>
+      別のカインドを確認してみます．
+</p>
+
+
+<pre class="src src-haskell">ghci<span style="color: #0000ff;">&gt;</span> <span style="color: #228b22;">:</span>k <span style="color: #228b22;">Either</span>  
+<span style="color: #228b22;">Either</span> <span style="color: #a0522d;">::</span> <span style="color: #a0522d;">*</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #a0522d;">*</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #a0522d;">*</span>  
+</pre>
+
+<p>
+      部分適用をして，
+</p>
+
+
+<pre class="src src-haskell">ghci<span style="color: #0000ff;">&gt;</span> <span style="color: #228b22;">:</span>k <span style="color: #228b22;">Either</span> <span style="color: #228b22;">String</span>
+<span style="color: #228b22;">Either</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">::</span> <span style="color: #a0522d;">*</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #a0522d;">*</span>
+ghci<span style="color: #0000ff;">&gt;</span> <span style="color: #228b22;">:</span>k <span style="color: #228b22;">Either</span> <span style="color: #228b22;">String</span> <span style="color: #228b22;">Int</span>
+<span style="color: #228b22;">Either</span> <span style="color: #228b22;">String</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">::</span> <span style="color: #a0522d;">*</span>
+</pre>
+
+<p>
+      <code>Either</code> を <code>Functor</code> 型クラスにしたときに部分適用を使いましたね．
+      なぜなら， <code>Functor</code> は，型引数を1つ取るのに対して， <code>Either</code> は2つだったからですよね．
+      言い換えると， <code>Functor</code> は <code>* -&gt; *</code> なるカインドを欲っしています．
+      しかし， <code>Either</code> は， <code>* -&gt; * -&gt; *</code> なので，
+      <code>Either</code> に部分適用させて <code>* -&gt; *</code> を得るのです．
+</p>
+<p>      
+      ここで，もう一度 <code>Functor</code> の定義について見てみます．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">class</span> <span style="color: #228b22;">Functor</span> f <span style="color: #7f007f;">where</span>   
+  fmap <span style="color: #a0522d;">::</span> (a <span style="color: #a0522d;">-&gt;</span> b) <span style="color: #a0522d;">-&gt;</span> f a <span style="color: #a0522d;">-&gt;</span> f b        
+</pre>
+
+<p>
+      <code>f</code> なる型引数は，1つの具象データ型を引数に取って，
+      具象データ型を作ることが分かります．
+</p>
+<p>
+      ここまで学んだ知識を使えば，
+      <code>Functor</code> と友達になりたい型は， <code>* -&gt; *</code> というカインドを持たなければならないと分かります．
+</p>
+<p>
+      カインドを意識して，何か作ってみましょう．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">class</span> <span style="color: #228b22;">Tofu</span> t <span style="color: #7f007f;">where</span>  
+  tofu <span style="color: #a0522d;">::</span> j a <span style="color: #a0522d;">-&gt;</span> t a j  
+</pre>
+
+<ul>
+<li><code>j a</code> は <code>tofu</code> の引数なので，具象データ型のはずです．
+        つまり， <code>*</code> です． <code>a</code> が <code>*</code> だと仮定すると，
+        <code>j</code> は <code>* -&gt; *</code> です．
+</li>
+<li><code>t a j</code> もまた <code>*</code> であるはずです．
+</li>
+<li><code>a</code> は <code>*</code> で， <code>j</code> は <code>* -&gt; *</code> なので，
+        <code>t</code> は <code>* -&gt; (* -&gt; *) -&gt; *</code> でしょう．
+</li>
+</ul>
+
+<p>      OK．では， <code>* -&gt; (* -&gt; *) -&gt; *</code> なるカインドを持つ型を作ってみましょう．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">data</span> <span style="color: #228b22;">Frank</span> a b  <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Frank</span> {frankField <span style="color: #a0522d;">::</span> b a} <span style="color: #7f007f;">deriving</span> (<span style="color: #228b22;">Show</span>)
+</pre>
+
+<p>
+      この代数データ型 (ADT: algebraic data type) のフィールドは，データを保持するのに利用されるので，
+      カインド <code>*</code> でなければなりません．
+      つまり <code>a</code> を <code>*</code> だとすると， <code>b</code> は 1つの型引数を取るので， <code>* -&gt; *</code> となります．
+      <code>Frank</code> は， <code>a</code> と <code>b</code> を引数として取るので， <code>Frank</code> 
+      は <code>* -&gt; (* -&gt; *) -&gt; *</code> となります．ここで，最初の <code>*</code> は <code>a</code> で， <code>(* -&gt; *)</code> は， <code>b</code>
+      です． ここで <code>Frank</code> 型の値を定義してその型をチェックしてみましょう．
+</p>
+
+
+
+<pre class="src src-haskell">ghci<span style="color: #0000ff;">&gt;</span> <span style="color: #228b22;">:</span>t <span style="color: #228b22;">Frank</span> {frankField <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Just</span> <span style="color: #8b2252;">"HAHA"</span>}
+<span style="color: #228b22;">Frank</span> {frankField <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Just</span> <span style="color: #8b2252;">"HAHA"</span>} <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Frank</span> [<span style="color: #228b22;">Char</span>] <span style="color: #228b22;">Maybe</span>
+ghci<span style="color: #0000ff;">&gt;</span> <span style="color: #228b22;">:</span>t <span style="color: #228b22;">Frank</span> {frankField <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Node</span> <span style="color: #8b2252;">'a'</span> <span style="color: #228b22;">EmptyTree</span> <span style="color: #228b22;">EmptyTree</span>}
+<span style="color: #228b22;">Frank</span> {frankField <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Node</span> <span style="color: #8b2252;">'a'</span> <span style="color: #228b22;">EmptyTree</span> <span style="color: #228b22;">EmptyTree</span>} <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Frank</span> <span style="color: #228b22;">Char</span> <span style="color: #228b22;">Tree</span>
+ghci<span style="color: #0000ff;">&gt;</span> <span style="color: #228b22;">:</span>t <span style="color: #228b22;">Frank</span> {frankField <span style="color: #a0522d;">=</span> <span style="color: #8b2252;">"YES"</span>}
+<span style="color: #228b22;">Frank</span> {frankField <span style="color: #a0522d;">=</span> <span style="color: #8b2252;">"YES"</span>} <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Frank</span> <span style="color: #228b22;">Char</span> <span style="color: #228b22;">[]</span>
+</pre>
+
+
+<p>
+      <code>frankField</code> は <code>a b</code> なる型なので，値の型も似た形になるはず．
+      <code>たとえば Just "HAHA" で</code> <code>Maybe [Char]</code> 型や <code>['Y', 'E', 'S']</code> で <code>[Char]</code> 型のような値を持つことができます．
+      <code>Frank</code> 型の値は， <code>Frank</code> のカインドと一致しています． <code>[Char]</code> は， <code>*</code> というカインドで，
+      <code>Maybe</code> は， <code>* -&gt; *</code> です．
+      全ての <code>Frank blah blaah</code> のカインドは， <code>*</code> です．
+</p>
+<p>      
+      <code>Frank</code> を <code>Tofu</code> のインスタンスにするのは簡単です． <code>tofu</code> は <code>j a</code> を取って，(例えば <code>Maybe Int</code>) そして，
+      <code>t a j</code> を返します．したがって， <code>Frank</code> を <code>t</code> (原文は <code>j</code> だが，おそらく間違い) と置けば，
+      結果の型は <code>Frank Int Maybe</code> です．
+</p>
+
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">instance</span> <span style="color: #228b22;">Tofu</span> <span style="color: #228b22;">Frank</span> <span style="color: #7f007f;">where</span>
+  tofu x <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Frank</span> x
+</pre>
+
+
+
+<pre class="src src-haskell">ghci<span style="color: #0000ff;">&gt;</span> tofu (<span style="color: #228b22;">Just</span> <span style="color: #8b2252;">'a'</span>) <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Frank</span> <span style="color: #228b22;">Char</span> <span style="color: #228b22;">Maybe</span>
+<span style="color: #228b22;">Frank</span> {frankField <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Just</span> <span style="color: #8b2252;">'a'</span>}
+ghci<span style="color: #0000ff;">&gt;</span> tofu [<span style="color: #8b2252;">"HELLO"</span>] <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Frank</span> [<span style="color: #228b22;">Char</span>] <span style="color: #228b22;">[]</span>
+<span style="color: #228b22;">Frank</span> {frankField <span style="color: #a0522d;">=</span> [<span style="color: #8b2252;">"HELLO"</span>]}
+ghci<span style="color: #0000ff;">&gt;</span> <span style="color: #228b22;">:</span>t <span style="color: #228b22;">Frank</span> (<span style="color: #228b22;">Just</span> <span style="color: #8b2252;">"HAHA"</span>)
+<span style="color: #228b22;">Frank</span> (<span style="color: #228b22;">Just</span> <span style="color: #8b2252;">"HAHA"</span>) <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Frank</span> [<span style="color: #228b22;">Char</span>] <span style="color: #228b22;">Maybe</span>
+</pre>
+
+
+<p>
+      もう少し訓練してみます．
+</p>
+
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">data</span> <span style="color: #228b22;">Barry</span> t k p <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Barry</span> { yabba <span style="color: #a0522d;">::</span> p, dabba <span style="color: #a0522d;">::</span> t k }
+</pre>
+
+<p>
+      これを <code>Functor</code> の一員にしたいとします． <code>Functor</code> のカインドは， <code>* -&gt; *</code>  ですが，
+      <code>Barry</code> は，違います． <code>Barry</code> のカインドは何でしょうか?
+      <code>something -&gt; something -&gt; something -&gt; *</code> となります．
+      <code>p</code> は <code>*</code> でしょうね(ADTのフィールドなので)．
+      <code>k</code> も <code>*</code> と仮定すると，
+      <code>t</code> は <code>* -&gt; *</code> です．
+      <code>something</code> を置き換えると，
+      <code>(* -&gt; *) -&gt; * -&gt; * -&gt; *</code> です．GHCI で調べてみると，
+</p>
+
+
+<pre class="src src-haskell">ghci<span style="color: #0000ff;">&gt;</span> <span style="color: #228b22;">:</span>k <span style="color: #228b22;">Barry</span>
+<span style="color: #228b22;">Barry</span> <span style="color: #a0522d;">::</span> (<span style="color: #a0522d;">*</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #a0522d;">*</span>) <span style="color: #a0522d;">-&gt;</span> <span style="color: #a0522d;">*</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #a0522d;">*</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #a0522d;">*</span>
+</pre>
+
+<p>
+      思った通りだ．満足．
+</p>
+<p>      
+      そうすると， <code>Functor</code> の要求するカインド <code>* -&gt; *</code> に合わせるためには，最初の2つを食べさせことになるので，
+      インスタンス定義の書き出しは，以下のようになるはず:
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">instance</span> <span style="color: #228b22;">Functor</span> (<span style="color: #228b22;">Barry</span> a b) <span style="color: #7f007f;">where</span><span style="color: #a0522d;">...</span>
+</pre>
+
+
+<p>
+      <code>fmap</code> の定義を <code>Barry</code> 用だと思って眺めると，
+      <code>fmap :: (a -&gt; b) -&gt; Barry c d a -&gt; Barry c d b</code> のように見える．
+      <code>Functor</code> の <code>f</code> を <code>Barry c d</code> に置き換えただけ．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">instance</span> <span style="color: #228b22;">Functor</span> (<span style="color: #228b22;">Barry</span> a b) <span style="color: #7f007f;">where</span>
+  fmap f (<span style="color: #228b22;">Barry</span> {yabba <span style="color: #a0522d;">=</span> x, dabba <span style="color: #a0522d;">=</span> y}) <span style="color: #a0522d;">=</span> 
+    <span style="color: #228b22;">Barry</span> {yabba <span style="color: #a0522d;">=</span> f x, dabba <span style="color: #a0522d;">=</span> y}
+</pre>
+
+<p>
+      <code>f</code> は，最初のフィールドにだけmapすると分かる．
+</p>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-1-2" class="outline-3">
+<h3 id="sec-1-2"><a href="http://learnyouahaskell.com/input-and-output">9</a>. Input and Output</h3>
+<div class="outline-text-3" id="text-1-2">
+
+<p>     Haskell は純粋関数型言語であると説明してきました．副作用がないということは素晴しいことです．
+     しかし，もし関数がその副作用として世界を一切変えることが許されないとすれば，
+     関数の実行結果をどうやって外界に知らせることができるのでしょうか．
+     結果を出力するということは外部デバイスの状態を変化させてしまうということです．
+</p>
+<p>
+     失望することはありません．Haskell では pure な関数とそうでない関数をきちんと分離するよい仕組みが用意されているのです．
+</p>
+
+</div>
+
+<div id="outline-container-1-2-1" class="outline-4">
+<h4 id="sec-1-2-1">Hello, world!</h4>
+<div class="outline-text-4" id="text-1-2-1">
+
+<p>      <a href="http://learnyouahaskell.com/input-and-output#hello-world">(http://learnyouahaskell.com/input-and-output#hello-world)</a> 
+</p>
+<p>
+      ここでやっと，(GHCI) ではなく，リアルに(それ単体で)動く Haskell プログラムを作ることにします!!
+      好きなエディタで，以下のファイルを作ります．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> putStrLn <span style="color: #8b2252;">"hello, world"</span>
+</pre>
+
+<p>
+      <code>main</code> という関数を定義しました．
+      何の変哲もないもの(run of the mill)に見えます．
+      <code>helloworld.hs</code> というファイルにセーブして，コンパイルします．
+</p>
+
+
+<pre class="example">$ ghc --make helloworld
+[1 of 1] Compiling Main ( helloworld.hs, helloworld.o )
+Linking helloworld ...
+</pre>
+
+<p>
+      おっけー．
+</p>
+
+
+<pre class="example">$ ./helloworld
+hello, world
+</pre>
+
+<p>
+      やった!! 何て退屈なんだ!!
+      <code>putStrLn</code> の型を調べます．
+</p>
+
+
+<pre class="src src-haskell">ghci<span style="color: #0000ff;">&gt;</span> <span style="color: #228b22;">:</span>t putStrLn
+<span style="color: #0000ff;">putStrLn</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">IO</span> <span style="color: #228b22;">()</span>
+ghci<span style="color: #0000ff;">&gt;</span> <span style="color: #228b22;">:</span>t putStrLn <span style="color: #8b2252;">"hello, world"</span>
+<span style="color: #0000ff;">putStrLn</span> <span style="color: #8b2252;">"hello, world"</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #228b22;">()</span>
+</pre>
+
+<p>
+      <code>printStrLn</code> は特に意味のある戻り値を持たないので，
+      ダミーの戻り値として， <code>()</code> が戻って来ます．
+</p>
+<p>
+      では，I/O アクションは，いつ実行されるのでしょうか．そこで，
+      <code>main</code> という名前が意味を持ちます．
+      I/O アクションというのは，それに <code>main</code> 
+      という名前を付けてコンパイル，実行されたときに実施されます．
+</p>
+<p>
+      プログラム中で1つのI/Oアクションだけという訳にはいかないでしょう．
+      そのために，I/O には， <code>do</code> という構文があって，複数のI/Oを1つにくっつけます．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+  putStrLn <span style="color: #8b2252;">"Hello, what's your name?"</span>
+  name <span style="color: #a0522d;">&lt;-</span> getLine
+  putStrLn (<span style="color: #8b2252;">"Hey "</span> <span style="color: #a0522d;">++</span> name <span style="color: #a0522d;">++</span> <span style="color: #8b2252;">", you rock!"</span>)
+</pre>
+
+<p>
+      この表現は，命令型プログラムに非常に近いですね．
+      <code>do</code> は，中の最後の <code>IO ()</code> を戻り値にするので，型は <code>IO ()</code> です．
+</p>
+<p>
+      <code>main</code> は <code>main :: IO something</code> という型シグネチャを持ちます．
+      <code>something</code> は何らかの具象データ型です．
+      通常，プログラム中で  <code>main</code> に明示的に型を宣言したりはしません．
+      ここで気になるのは2行目: 
+</p><pre class="example">
+name &lt;- getLine
+</pre>
+
+<p>      これは， 1行読んで， <code>name</code> に格納しているように見えます．
+      では， <code>getLine</code> の型は?
+</p>
+
+
+<pre class="src src-haskell">ghci<span style="color: #0000ff;">&gt;</span> <span style="color: #228b22;">:</span>t getLine
+<span style="color: #0000ff;">getLine</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #228b22;">String</span>
+</pre>
+
+<p>
+      <code>getLine</code> は， <code>String</code> を結果として持つ I/O アクションです．
+      I/O アクションは，脚の付いた箱のようなもので，
+      現実世界に出掛けて行って何らかの仕事をして，結果を箱に入れて帰ってきます．
+      箱の中から値を取り出すには <code>&lt;-</code> を使います．
+</p>
+<p>
+      そして，I/O アクションからデータを持ち出したいなら，
+      それは，別の I/O アクションの中に居るときだけなのです．
+      これによって，Haskell は純粋でないコードを純粋な部分から分離しているのです．
+</p>
+<p>
+      <code>getLine</code> は純粋ではありません．なぜなら2度実行すると同じ値が返ってくるとは限らないからです．
+      そのため，IO 構成子によって汚染されているといい，I/O コードの中でしかその値を取り出すことができません．
+      I/O コード内での演算は，I/O 汚染されているコードから得られる結果なので，これも汚染されていると考えることができます．
+</p>
+<p>
+      ここで， <b>汚染されている</b> といいましたが，I/Oの結果を純粋関数の入力として全く使用しないということではありません．
+      <code>name</code> は <code>&lt;-</code> によって，単なる <code>String</code> となっています．
+      あなたの名前 <code>name</code> を引数として将来を予言する <code>tellForetune</code> という関数があると，
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+  putStrLn <span style="color: #8b2252;">"Hello, what's your name?"</span>
+  name <span style="color: #a0522d;">&lt;-</span> getLine
+  putStrLn <span style="color: #a0522d;">$</span> <span style="color: #8b2252;">"this is your future: "</span> <span style="color: #a0522d;">++</span> 
+    tellFortune name
+</pre>
+
+<p>
+      <code>tellForetune</code> は I/O のことについては一切知る必要がありません．
+      <code>String -&gt; String</code> な関数です．
+</p>
+<p>
+      では，これは正しい?
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">nameTag</span> <span style="color: #a0522d;">=</span> <span style="color: #8b2252;">"Hello, my name is "</span> <span style="color: #a0522d;">++</span> getLine
+</pre>
+
+<p>
+      いいえ． <code>++</code> は <code>String</code> と <code>IO String</code> を結合できないです．
+      まず <code>IO String</code> を <code>String</code> にしなければいけません． <code>name &lt;- getLine</code> のような操作が必要になるわけですが，
+      それは，I/O アクションの中だけでしかできなのです．
+      純粋ではない値を扱うためには，純粋ではない環境の中だけに限られるのです．
+      純粋でない環境は，拡散していくので，I/O アクションをできるだけ狭い範囲に閉じ込めることが最善の策 (in our best interest)
+      なのです．
+</p>
+<p>
+      I/O アクションは，結果をその中に閉じ込めて戻ってきます．すべての値を取り出すように以下のようにも書けます．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+  foo <span style="color: #a0522d;">&lt;-</span> putStrLn <span style="color: #8b2252;">"Hello, what's your name?"</span>
+  name <span style="color: #a0522d;">&lt;-</span> getLine
+  putStrLn (<span style="color: #8b2252;">"Hey "</span> <span style="color: #a0522d;">++</span> name <span style="color: #a0522d;">++</span> <span style="color: #8b2252;">", you rock!"</span>)
+</pre>
+
+<p>
+      しかし， <code>putStrLn</code> からは <code>()</code> が返ってくるだけなので，ムダなのでやりません．
+      最後の行には <code>&lt;-</code> を使うことができないのですが，この理由は後にモナドの所で説明します．
+</p>
+<p>
+      初心者がよく間違う例:
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">name</span> <span style="color: #a0522d;">=</span> getLine
+</pre>
+
+<p>
+      これは，単に <code>getLine</code> に <code>name</code> という別名を付けているだけになります．
+      I/O アクションが実際に実行されるのは，
+</p><ul>
+<li>main という名前が与えられたとき
+</li>
+<li>do ブロックで作った大きな I/O アクションの中にあるとき
+</li>
+</ul>
+
+<p>      do ブロックは，いくつかの I/O をアクションを1つにまとめることができて，
+      それによってまとめられた I/O アクションは，また別の do ブロックの一部になったりします．
+      いずれにしても，最終的に <code>main</code> につながっていれば，その I/O は実行されます．
+</p>
+<p>
+      もう1つ GHCI で I/O アクションを入力した場合です．
+</p>
+
+
+<pre class="src src-haskell">ghci<span style="color: #0000ff;">&gt;</span> putStrLn <span style="color: #8b2252;">"HEEY"</span>  
+<span style="color: #228b22;">HEEY</span>        
+</pre>
+
+
+<p>
+      以下，let を使った， do ブロックの中で <code>let</code> を並べるいい例です．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">import</span> <span style="color: #228b22;">Data.Char</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+  putStrLn <span style="color: #8b2252;">"What's your first name?"</span>
+  firstName <span style="color: #a0522d;">&lt;-</span> getLine
+  putStrLn <span style="color: #8b2252;">"What's your last name?"</span>
+  lastName <span style="color: #a0522d;">&lt;-</span> getLine
+  <span style="color: #7f007f;">let</span> bigFirstName <span style="color: #a0522d;">=</span> map toUpper firstName
+      bigLastName <span style="color: #a0522d;">=</span> map toUpper lastName
+  putStrLn <span style="color: #a0522d;">$</span> <span style="color: #8b2252;">"hey "</span> <span style="color: #a0522d;">++</span> bigFirstName <span style="color: #a0522d;">++</span> 
+    <span style="color: #8b2252;">" "</span> <span style="color: #a0522d;">++</span> bigLastName <span style="color: #a0522d;">++</span> <span style="color: #8b2252;">", how are you?"</span>
+</pre>
+
+
+<p>
+      次の例は，1行読込んで，単語を逆順にして出力するプログラムです．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>   
+  line <span style="color: #a0522d;">&lt;-</span> getLine  
+  <span style="color: #7f007f;">if</span> null line  
+    <span style="color: #7f007f;">then</span> return <span style="color: #228b22;">()</span>  
+    <span style="color: #7f007f;">else</span> <span style="color: #7f007f;">do</span>  
+      putStrLn <span style="color: #a0522d;">$</span> reverseWords line  
+      main  
+
+<span style="color: #0000ff;">reverseWords</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">String</span>  
+<span style="color: #0000ff;">reverseWords</span> <span style="color: #a0522d;">=</span> unwords <span style="color: #a0522d;">.</span> map reverse <span style="color: #a0522d;">.</span> words  
+</pre>
+
+
+<p>
+      Tips:
+</p>
+
+
+<pre class="example">ghc --make helloworld
+./helloworld
+</pre>
+
+<p>
+      の代わりに
+</p>
+
+
+<pre class="example">runhaskell helloworld.hs
+</pre>
+
+<p>
+      としてもいいです．
+</p>
+<p>
+      <code>reverseWords</code> は，こうも書けます:
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">reverseWords</span> st <span style="color: #a0522d;">=</span> unwords (map reverse (words st))
+</pre>
+
+
+<p>
+      次に <code>main</code> を見てみます．
+      Haskell の <code>if</code> は，かならず <code>else</code> が必要でした．しかも同じ型を返すので，
+      <code>if</code> <i>condition</i> <code>then</code> <i>IO action</i> <code>else</code> <i>IO action</i> の形でなければなりません．
+      <code>else</code> の後には，ただ1つの I/O アクションが来るので，以下のように書けます．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">else</span> (<span style="color: #7f007f;">do</span>
+  putStrLn <span style="color: #a0522d;">$</span> reverseWords line
+  main)
+</pre>
+
+<p>
+      <code>null line</code> が true だった場合，つまり <code>return ()</code> は何をするのでしょうか．
+      <code>return ()</code> は命令型のそれとは全く異なるものです．
+      <code>return</code> は， 純粋な値を IO の箱で包むはたらきをします．
+      つまり， <code>(return "hahaha")</code> は， <code>IO String</code> の型を持ちます．
+</p>
+<p>
+      <code>return</code> は do ブロックを終わらせる働きはありません．
+      以下のプログラムは普通に最後まで実行されます．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+  return <span style="color: #228b22;">()</span>
+  return <span style="color: #8b2252;">"HAHAHA"</span>
+  line <span style="color: #a0522d;">&lt;-</span> getLine
+  return <span style="color: #8b2252;">"BLAH BLAH BLAH"</span>
+  return 4
+  putStrLn line
+</pre>
+
+
+<p>
+      I/O の箱を作る <code>return</code> と，そこから値を取り出す  <code>&lt;-</code> 使って，以下のようにも書けます．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+  a <span style="color: #a0522d;">&lt;-</span> return <span style="color: #8b2252;">"hell"</span>
+  b <span style="color: #a0522d;">&lt;-</span> return <span style="color: #8b2252;">"yeah!"</span>
+  putStrLn <span style="color: #a0522d;">$</span> a <span style="color: #a0522d;">++</span> <span style="color: #8b2252;">" "</span> <span style="color: #a0522d;">++</span> b
+</pre>
+
+<p>
+      しかし，これは冗長です． <code>let</code> を使って，以下のように書けます:
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+  <span style="color: #7f007f;">let</span> a <span style="color: #a0522d;">=</span> <span style="color: #8b2252;">"hell"</span>
+      b <span style="color: #a0522d;">=</span> <span style="color: #8b2252;">"yeah"</span>
+  putStrLn <span style="color: #a0522d;">$</span> a <span style="color: #a0522d;">++</span> <span style="color: #8b2252;">" "</span> <span style="color: #a0522d;">++</span> b
+</pre>
+
+
+<p>
+      ここからは，I/O を扱う際に便利な関数をいくつか見て行きましょう．
+</p><ul>
+<li id="sec-1-2-1-1">putStr<br/>
+        <code>putStrLn</code> の改行なし版
+
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span> putStr <span style="color: #8b2252;">"Hey, "</span>
+          putStr <span style="color: #8b2252;">"I'm "</span>
+          putStrLn <span style="color: #8b2252;">"Andy!"</span>
+</pre>
+
+<p>
+        実行結果:
+</p>
+
+
+<pre class="example">$ runhaskell putstr_test.hs
+Hey, I'm Andy!
+</pre>
+
+
+</li>
+</ul>
+<ul>
+<li id="sec-1-2-1-2">putChar<br/>
+        1文字出力
+
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span> putChar <span style="color: #8b2252;">'t'</span>
+          putChar <span style="color: #8b2252;">'e'</span>
+          putChar <span style="color: #8b2252;">'h'</span>
+</pre>
+
+<p>
+        実行結果:
+</p>
+
+
+<pre class="example">$ runhaskell putchar_test.hs
+teh
+</pre>
+
+<p>
+        <code>putStr</code> は， <code>putChar</code> によって再帰的に定義されています．基底部は，空文字列です．
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">putStr</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">IO</span> <span style="color: #228b22;">()</span>
+  putStr <span style="color: #228b22;">[]</span> <span style="color: #a0522d;">=</span> return <span style="color: #228b22;">()</span>
+  putStr (x<span style="color: #228b22;">:</span>xs) <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+    putChar x
+    putStr xs
+</pre>
+
+
+</li>
+</ul>
+<ul>
+<li id="sec-1-2-1-3">print<br/>
+        <code>Show</code> 型クラスに属する値(つまり自身の文字列表現を持っている型)を引数に取って，
+        <code>show</code> を呼び出し，結果の文字列を表示します．
+        つまり， <code>putstrLn .show</code> とほぼ同じです．
+
+
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span> print <span style="color: #228b22;">True</span>  
+          print 2  
+          print <span style="color: #8b2252;">"haha"</span>  
+          print 3<span style="color: #a0522d;">.</span>2  
+          print [3,4,3]
+</pre>
+
+<p>
+        実行結果:
+</p>
+
+
+<pre class="example">$ runhaskell print_test.hs
+True  
+2  
+"haha"  
+3.2  
+[3,4,3]
+</pre>
+
+<p>
+        これはとっても便利．
+        GHCI 上での実行結果表示には， <code>print</code> が使われています．
+</p>
+
+
+<pre class="src src-haskell">ghci<span style="color: #0000ff;">&gt;</span> 3
+3
+ghci<span style="color: #0000ff;">&gt;</span> print 3
+3
+ghci<span style="color: #0000ff;">&gt;</span> map (<span style="color: #a0522d;">++</span><span style="color: #8b2252;">"!"</span>) [<span style="color: #8b2252;">"hey"</span>,<span style="color: #8b2252;">"ho"</span>,<span style="color: #8b2252;">"woo"</span>]
+[<span style="color: #8b2252;">"hey!"</span>,<span style="color: #8b2252;">"ho!"</span>,<span style="color: #8b2252;">"woo!"</span>]
+ghci<span style="color: #0000ff;">&gt;</span> print (map (<span style="color: #a0522d;">++</span><span style="color: #8b2252;">"!"</span>) [<span style="color: #8b2252;">"hey"</span>,<span style="color: #8b2252;">"ho"</span>,<span style="color: #8b2252;">"woo"</span>])
+[<span style="color: #8b2252;">"hey!"</span>,<span style="color: #8b2252;">"ho!"</span>,<span style="color: #8b2252;">"woo!"</span>]
+</pre>
+
+
+</li>
+</ul>
+<ul>
+<li id="sec-1-2-1-4">getChar<br/>
+        1文字入力関数です．
+        <code>getChar :: IO Char</code> という型シグネチャを持ちます．
+        バッファリングのため，ユーザがリターンキーを叩くまで読まれないので注意．
+
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+  c <span style="color: #a0522d;">&lt;-</span> getChar
+  <span style="color: #7f007f;">if</span> c <span style="color: #a0522d;">/=</span> <span style="color: #8b2252;">' '</span>
+    <span style="color: #7f007f;">then</span> <span style="color: #7f007f;">do</span>
+      putChar c  
+      main  
+    <span style="color: #7f007f;">else</span> return <span style="color: #228b22;">()</span>
+</pre>
+
+<p>
+        実際に実行してみるといいよ．
+</p>
+</li>
+</ul>
+<ul>
+<li id="sec-1-2-1-5">when<br/>
+        when は <code>Control.Monad</code> に定義されています (<code>import Control.Monad</code> してください)．
+        真理値と I/O アクションを引数に取り，真理値が真の場合は I/O アクションを返し，
+        偽の場合は， <code>return ()</code> します．
+
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">import</span> <span style="color: #228b22;">Control.Monad</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+  c <span style="color: #a0522d;">&lt;-</span> getChar
+  when (c <span style="color: #a0522d;">/=</span> <span style="color: #8b2252;">' '</span>) <span style="color: #a0522d;">$</span> <span style="color: #7f007f;">do</span>
+    putChar c
+    main
+</pre>
+
+<p>
+        <code>if</code> <i>something</i> <code>then do</code> <i>some IO action</i> <code>else return ()</code> のパターンを簡潔に書けます．
+</p>
+</li>
+</ul>
+<ul>
+<li id="sec-1-2-1-6">sequence<br/>
+        sequence は I/O アクションのリストを取って，それらを順番に実行するような I/O アクションを返します．
+        その I/O アクションの結果は，個々の I/O アクションの実行結果のリストです．
+        つまり <code>sequence :: [IO a] -&gt; IO [a]</code> となります．
+
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+  a <span style="color: #a0522d;">&lt;-</span> getLine
+  b <span style="color: #a0522d;">&lt;-</span> getLine
+  c <span style="color: #a0522d;">&lt;-</span> getLine
+  print [a,b,c]
+</pre>
+
+<p>
+        <code>sequence</code> を使うと:
+</p>
+
+
+<pre class="src src-haskell"><span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+rs <span style="color: #a0522d;">&lt;-</span> sequence [getLine, getLine, getLine]
+<span style="color: #0000ff;">print</span> rs
+</pre>
+
+
+<p>
+        <code>sequence</code> をよく使う例は，リストに対して <code>print</code> や <code>getLine</code> をマップしたい場合です．
+        <code>map print [1,2,3,4]</code> は I/O アクションを生成しません．これは，I/O アクションのリストを生成するだけで，
+        <code>[print 1, print 2, print 3, print 4]</code> と書いたのと同じだからです．
+        I/OアクションのリストをI/Oアクションに変換したいなら， <code>sequence</code> が必要です．
+</p>
+
+
+<pre class="src src-haskell">ghci<span style="color: #0000ff;">&gt;</span> sequence (map print [1,2,3,4,5])  
+1  
+2  
+3  
+4  
+5  
+[<span style="color: #228b22;">()</span>,<span style="color: #228b22;">()</span>,<span style="color: #228b22;">()</span>,<span style="color: #228b22;">()</span>,<span style="color: #228b22;">()</span>]          
+</pre>
+
+</li>
+</ul>
+<ul>
+<li id="sec-1-2-1-7">mapM と mapM_<br/>
+        I/O アクションを返すような関数をリストにマップして，
+        結果をシーケンスにすることがよくあります．
+        そのために <code>mapM</code> と <code>mapM_</code> が用意されています．
+        <code>mapM_</code> は，I/O の結果を捨てます．
+
+
+
+<pre class="src src-haskell">ghci<span style="color: #0000ff;">&gt;</span> mapM print [1,2,3]
+1
+2
+3
+[<span style="color: #228b22;">()</span>,<span style="color: #228b22;">()</span>,<span style="color: #228b22;">()</span>]
+ghci<span style="color: #0000ff;">&gt;</span> mapM_ print [1,2,3]
+1
+2
+3 
+</pre>
+
+
+</li>
+</ul>
+<ul>
+<li id="sec-1-2-1-8">forever<br/>
+        I/O アクションを取り，それを永遠に繰り返す I/O アクションを返します．
+        <code>Control.Monad</code> に属しています．
+
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">import</span> <span style="color: #228b22;">Control.Monad</span>
+<span style="color: #7f007f;">import</span> <span style="color: #228b22;">Data.Char</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> forever <span style="color: #a0522d;">$</span> <span style="color: #7f007f;">do</span>
+  putStr <span style="color: #8b2252;">"Give me some input: "</span>
+  l <span style="color: #a0522d;">&lt;-</span> getLine
+  putStrLn <span style="color: #a0522d;">$</span> map toUpper l
+</pre>
+
+<p>
+        上の例は，ユーザからの入力を受け取り続けて，大文字にして返します．
+</p>
+</li>
+</ul>
+<ul>
+<li id="sec-1-2-1-9">forM<br/>
+        <code>forM</code> (<code>Control.Monad</code> に属しています)は， <code>mapM</code> に似ていますが，
+        引数の順番が逆になっています．最初の引数は，リストで，2番目がリストにマップ適用したい関数です．
+        何が有用なのでしょう．
+
+
+
+<pre class="src src-haskell"><span style="color: #7f007f;">import</span> <span style="color: #228b22;">Control.Monad</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #7f007f;">do</span>
+  colors <span style="color: #a0522d;">&lt;-</span> forM [1,2,3,4] (<span style="color: #a0522d;">\</span>a <span style="color: #a0522d;">-&gt;</span> <span style="color: #7f007f;">do</span>
+    putStrLn <span style="color: #a0522d;">$</span> <span style="color: #8b2252;">"Which color do you assoc with the num "</span> 
+      <span style="color: #a0522d;">++</span> show a <span style="color: #a0522d;">++</span> <span style="color: #8b2252;">"?"</span>
+    color <span style="color: #a0522d;">&lt;-</span> getLine
+    return color)
+  putStrLn <span style="color: #8b2252;">"The colors you associate with 1,2,3,4 are: "</span>
+  mapM putStrLn colors
+</pre>
+
+<p>
+        <code>(\a -&gt; do ... )</code> は，数を取って I/O アクションを返す関数です．
+        ここで，
+</p>
+
+
+<pre class="src src-haskell">color <span style="color: #a0522d;">&lt;-</span> getLine
+<span style="color: #0000ff;">return</span> color)
+</pre>
+
+<p>
+        の部分は，冗長です． <code>&lt;-</code> で取り出して， <code>return</code> でまた包んでいるからです．
+        <code>getLine</code> だけで十分です．
+</p>
+
+
+
+<pre class="example">$ runhaskell form_test.hs
+Which color do you associate with the number 1?
+white
+Which color do you associate with the number 2?
+blue
+Which color do you associate with the number 3?
+red
+Which color do you associate with the number 4?
+orange
+The colors that you associate with 1, 2, 3 and 4 are:
+white
+blue
+red
+orange
+</pre>
+
+<p>
+        <code>forM</code> がなくても (<code>mapM</code> があれば) いいのですが， <code>forM</code> を使うと可読性が上がる場合があります．
+        <code>do</code> の書式を使ってスポット的にマップしたい内容を(長々と)書きたい場合には <code>forM</code> が向いています．
+</p>
+<p>
+        最後の1行は， <code>forM colors putStrLn</code> とも書けますね．
+</p>
+<p>
+        I/O アクションは，Haskell の他の値と同じように関数の引数に取ったり，戻り値にしたりできます．
+        違うのは， <code>main</code> 関数の下にあると (GHCI の行にあると) 実行されることです．
+        それによって，画面に文字が出たり，スピーカから音が出たりするのです．
+        個々のI/O アクションは，リアルワールドから取得した結果を箱に詰めて持ち帰るのです．
+</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2012-06-25</p>
+<p class="author">Author: 乃村 能成</p>
+<p class="creator"><a href="http://orgmode.org">Org</a> version 7.8.11 with <a href="http://www.gnu.org/software/emacs/">Emacs</a> version 24</p>
+
+
+</div>
+</body>
+</html>

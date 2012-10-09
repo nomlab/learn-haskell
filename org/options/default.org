@@ -1,0 +1,32 @@
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  ja
+#+OPTIONS:   H:3 num:nil toc:3 \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+#+OPTIONS: author:t
+#+OPTIONS: email:nil
+#+OPTIONS: creator:t
+#+OPTIONS: timestamp:t
+#+LATEX_CLASS: jarticle
+#+LATEX_CLASS_OPTIONS: [a4j,12pt]
+
+#+LATEX_HEADER: \usepackage{plain-article}
+
+# http://www.biwako.shiga-u.ac.jp/sensei/kumazawa/tex/fancyvrb.html
+#+LaTeX_HEADER: \usepackage{fancyvrb}
+#+LaTeX_HEADER: \usepackage{listings}
+
+##+LaTeX_HEADER: \lstnewenvironment{haskell}{\lstset{language={haskell},basicstyle={\ttfamily\footnotesize},frame=single,breaklines=true}}{}
+
+##+LATEX_HEADER: \pagestyle{empty}
+##+LATEX_HEADER: \renewcommand\maketitle{}
+##+LaTeX: \thispagestyle{empty}
+
+#+LaTeX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{baselinestretch=0.9,fontsize=\small,frame=single,xleftmargin=1em}
+##+LaTeX_HEADER: \DefineVerbatimEnvironment{haskell}{Verbatim}{baselinestretch=0.8,frame=single,xleftmargin=1em}
