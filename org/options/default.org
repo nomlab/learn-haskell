@@ -30,3 +30,4 @@
 
 #+LaTeX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{baselinestretch=0.9,fontsize=\small,frame=single,xleftmargin=1em}
 ##+LaTeX_HEADER: \DefineVerbatimEnvironment{haskell}{Verbatim}{baselinestretch=0.8,frame=single,xleftmargin=1em}
+#+STYLE: <link rel="stylesheet" type="text/css" href="pub/css/text.css">
