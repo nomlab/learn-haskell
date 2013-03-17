@@ -1,0 +1,59 @@
+#+TITLE:     演習問題と解答(02) - 乃村研Haskell勉強会2012
+#+AUTHOR:    吉井 英人
+#+EMAIL:     yoshii@cswlab.s.okayama-u.ac.jp
+#+DATE:      2012-06-25
+#+SETUPFILE: options/default.org
+
+* 演習問題と解答(08)
+** 出題範囲
+    + 2章 I'm a list comprehension  から
+    + 4章 Pattern matching まで
+
+    [[file:t16-13-13-nom.org][輪講資料]]へ
+    
+** 問題
+*** 問題1 
+      リスト内包表記を使って，以下の条件を満たす数を出力するプログラムを作成せよ．
+      + 1から100までの整数
+      + 偶数
+      + 7の倍数
+      実行結果は以下の通りである．
+      #+BEGIN_SRC haskell
+        [14, 28, 42, 56, 70, 84, 98]
+      #+END_SRC
+
+*** 問題2
+      以下の条件をすべて満たす直角三角形の辺の長さを求める関数を作成せよ．
+      + すべての辺の長さが10以下
+      + 辺の長さの合計が12
+      実行例以下の通りである． 
+      #+BEGIN_SRC haskell
+        ghci> rightTriangle'
+        [(3,4,5)]
+      #+END_SRC
+*** 問題3
+      フィボナッチ数を求めるプログラムをパターンマッチングを用いて作成せよ．
+      フィボナッチ数を求める式は以下の通りである．(n番目のフィボナッチ数をF_nとする．)
+      #+BEGIN_SRC haskell
+        F_0 = 0
+        F_1 = 1
+        F_n+2 = F_n + F_n+1 (n > 0)
+      #+END_SRC
+** 解答例
+*** 解答1 
+     #+BEGIN_SRC haskell
+       [x | x <- [1..100], even x, x `mod` 7 == 0]
+     #+END_SRC
+
+*** 解答2
+    #+BEGIN_SRC haskell
+      rightTriangles' = [(a,b,c) | c <- [1..10], b <- [1..c], a <- [1..b], a^2 + b^2 == c^2, a+b+c == 12]
+    #+END_SRC
+
+*** 解答3
+    #+BEGIN_SRC haskell
+      fibonacci :: (Integral a) => a -> a
+      fibonacci 0 = 0
+      fibonacci 1 = 1
+      fibonacci n = fibonacci (n-2) + fibonacci (n-1)
+    #+END_SRC
