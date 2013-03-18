@@ -202,3 +202,18 @@ img {
     border: 1pt solid #AEBDCC;
     background-color: #F3F5F7;
 }
+
+div#postamble {
+    width: 100%;
+    text-align: right;
+    font-size: smaller;
+    border-top: 2px solid #808080;
+    margin-top: 3em;
+    padding: 1em 0em;
+}
+div#postamble p {
+    margin: 0.2em 0em;
+}
+p.creator {
+    color: #a0a0a0;
+}
