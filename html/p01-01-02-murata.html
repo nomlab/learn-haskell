@@ -3,12 +3,12 @@
                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
 <head>
-<title>p01-01-02-murata</title>
+<title>演習問題と解答(01) - 乃村研Haskell勉強会2012</title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-<meta name="title" content="p01-01-02-murata"/>
+<meta name="title" content="演習問題と解答(01) - 乃村研Haskell勉強会2012"/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2012-10-09T20:31+0900"/>
-<meta name="author" content="Yoshinari Nomura"/>
+<meta name="generated" content="2012-06-04"/>
+<meta name="author" content="村田 裕哉"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
 <style type="text/css">
@@ -59,177 +59,8 @@
   .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
                                  font-weight:bold; }
   /*]]>*/-->
-</style><style type="text/css">
-<!--/*--><![CDATA[/*><!--*/
-html {
-    font-family:'ヒラギノ丸ゴ Pro','Hiragino Maru Gothic Pro','メイリオ',Meiryo,'ＭＳ Ｐゴシック',sans-serif;
-    font-size: 12pt;
-}
-pre {
-    border: 1pt solid #AEBDCC;
-    background-color: #F3F5F7;
-    padding: 5pt;
-    font-family: courier, monospace;
-    font-size: 90%;
-    overflow:auto;
-}
-table, th, td {
-    border: 1px #000000 solid;
-    border-collapse: collapse;
-}
-
-td, th {
-    vertical-align: top;
-}
-
-dt {
-    font-weight: bold;
-    color: green;
-}
-
-div.figure {
-    padding: 0.5em;
-}
-
-div.figure p {
-    text-align: center;
-}
-
-.linenr {
-    font-size: smaller;
-}
-
-.code-highlighted {
-    background-color:#ffff00;
-}
-
-/* my settings */
-
-body {
-    color: black;
-    // background: #d1eeee;
-    color: black;
-    line-height: 1.5;
-    margin-top: 50px;
-    margin-right: 10%;
-    margin-left: 1em;
-    letter-spacing: 2px;
-}
-
-h1 {
-    text-align: center;
-}
-
-pre {
-    padding: 10px 10px 10px 10px;
-    margin: 0px 0px 0px 1em;
-    letter-spacing: 0px;
-    line-height: 1;
-}
-
-h2 {
-    margin-bottom: 2em;
-    border: solid;
-    padding: 0px 10px 2px 10px;
-    border-width: 0px 0px 3px 0.7em;
-    border-color: transparent transparent black black;
-}
-
-h3 {
-    margin-bottom: 2em;
-    border: solid;
-    padding: 0px 10px 2px 10px;
-    border-width: 0px 0px 1px 0.7em;
-    border-color: transparent transparent brown brown;
-}
-
-h4 {
-    border: solid;
-    padding: 0px 10px 2px 10px;
-    border-width: 0px 0px 1px 0.7em;
-    border-color: blue;
-}
-
-h5 {
-    border: solid;
-    padding: 0px 10px 2px 10px;
-    border-width: 0px 0px 1px 0.7em;
-    border-color: green;
-    color: green;
-}
-
-th {
-    font-weight: bold;
-    border: 1px solid #777777;
-    background-color: #8899FF;
-    padding: 3px;
-    border-bottom: 0px;
-    border-right: 0px;
-}
-
-td {
-    border-top: 1px solid #777777;
-    padding: 3px;
-}
-
-tr {
-    background-color: aliceblue;
-}
-
-table {
-    border-spacing: 0px;
-    empty-cells:show;
-    margin-bottom: 6px;
-    border: 1px solid #0000AA;
-    border-top: 0px;
-}
-
-table.layer {
-    text-align: center;
-}
-
-blockquote {
-    border: 1pt solid #AEBDCC;
-    background-color: #F3F5F7;
-    padding: 0px 0px 0px 1em;
-}
-
-td.byteorder {
-    text-align: center;
-}
-
-em {
-    color: red;
-}
-
-b {
-    color: green;
-}
-
-img {
-    border: 1pt solid #AEBDCC;
-    background-color: #F3F5F7;
-}
-
-/* postamble */
-div#postamble {
-    width: 100%;
-    text-align: right;
-    font-size: smaller;
-    border-top: 2px solid #808080;
-    margin-top: 3em;
-    padding: 1em 0em;
-}
-div#postamble p {
-    margin: 0.2em 0em;
-}
-p.creator {
-    color: #a0a0a0;
-}
-/*]]>*/-->
 </style>
 <link rel="stylesheet" type="text/css" href="pub/css/text.css">
-
 <script type="text/javascript">
 <!--/*--><![CDATA[/*><!--*/
  function CodeHighlightOn(elem, id)
@@ -261,15 +92,199 @@ p.creator {
 </div>
 
 <div id="content">
-<h1 class="title">p01-01-02-murata</h1>
+<h1 class="title">演習問題と解答(01) - 乃村研Haskell勉強会2012</h1>
+
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">演習問題と解答(01)</a>
+<ul>
+<li>
+<ul>
+<li><a href="#sec-1-1">出題範囲</a></li>
+<li><a href="#sec-1-2">問題</a></li>
+<li><a href="#sec-1-3">解答例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1">演習問題と解答(01)</h2>
+<div class="outline-text-2" id="text-1">
+
 
 </div>
 
-<div id="postamble">
-<p class="date">Date: 2012-10-09T20:31+0900</p>
-<p class="author">Author: Yoshinari Nomura</p>
-<p class="creator"><a href="http://orgmode.org">Org</a> version 7.8.11 with <a href="http://www.gnu.org/software/emacs/">Emacs</a> version 24</p>
+<div id="outline-container-1-1" class="outline-4">
+<h4 id="sec-1-1">出題範囲</h4>
+<div class="outline-text-4" id="text-1-1">
 
+<ul>
+<li>01章 About this tutorial から
+</li>
+<li>02章 Texas ranges まで
+</li>
+</ul>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-1-2" class="outline-4">
+<h4 id="sec-1-2">問題</h4>
+<div class="outline-text-4" id="text-1-2">
+
+<ul>
+<li id="sec-1-2-1">問題1<br/>
+      「外税価格 <code>(Int)</code> 」と「消費税率 <code>(Int)</code> 」を引数に取り，「内税価格 <code>(Int)</code> 」を返す関数を作成せよ．
+      ただし，小数点以下は切り捨てとする．
+
+<p>      
+      実行例:
+</p>
+
+
+<pre class="example">ghci&gt; includedTax 500 5
+525
+</pre>
+
+</li>
+</ul>
+<ul>
+<li id="sec-1-2-2">問題2<br/>
+      「外税価格 <code>(Int)</code> 」と「西暦 <code>(Int)</code> 」を引数に取り，
+      「西暦に対応した内税価格 <code>(Int)</code> 」を返す関数を表１をもとに作成せよ．
+      ただし，小数点以下は切り捨てとする．
+
+<p>      
+      実行例:
+</p>
+
+
+<pre class="example">ghci&gt; includedTax 100 2014
+108
+</pre>
+
+
+<p>
+      表1 : 西暦と消費税率の対応
+</p><table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<caption></caption>
+<colgroup><col class="left" /><col class="left" />
+</colgroup>
+<tbody>
+<tr><td class="left">〜 1988年</td><td class="left">0％</td></tr>
+<tr><td class="left">1989年 〜 1996年</td><td class="left">3％</td></tr>
+<tr><td class="left">1997年 〜 2013年</td><td class="left">5％</td></tr>
+<tr><td class="left">2014年</td><td class="left">8％</td></tr>
+<tr><td class="left">2015年 〜</td><td class="left">10％</td></tr>
+</tbody>
+</table>
+
+</li>
+</ul>
+<ul>
+<li id="sec-1-2-3">問題3<br/>
+      「外税価格 <code>(Int)</code> のリスト」と「西暦 <code>(Int)</code> 」を取り，
+      「外税価格の総和に対する，西暦に対応した内税価格 <code>(Int)</code> 」を返す関数を作成せよ．
+      ただし，小数点以下は切り捨てとする．
+
+<p>
+      実行例:
+</p>
+
+
+<pre class="example">ghci&gt; cashRegister [100,300,1000] 2015
+1540
+</pre>
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-1-3" class="outline-4">
+<h4 id="sec-1-3">解答例</h4>
+<div class="outline-text-4" id="text-1-3">
+
+<ul>
+<li id="sec-1-3-1">解答1<br/>
+
+
+
+<pre class="example">includedTax :: Int -&gt; Int -&gt; Int
+includedTax rate value = value + consumptionTax rate value
+
+consumptionTax :: Int -&gt; Int -&gt; Int
+consumptionTax rate value = value * rate `div` 100
+</pre>
+
+
+</li>
+</ul>
+<ul>
+<li id="sec-1-3-2">解答2<br/>
+
+
+
+<pre class="example">includedTax :: Int -&gt; Int -&gt; Int
+includedTax value year = value + consumptionTax value year
+
+consumptionTax :: Int -&gt; Int -&gt; Int
+consumptionTax value year = value * taxRate year `div` 100
+
+taxRate :: Int -&gt; Int
+taxRate year = if year &lt; 1989 then 0
+               else if year &lt; 1997 then 3
+               else if year &lt; 2014 then 5
+               else if year == 2014 then 8
+               else 10
+</pre>
+
+</li>
+</ul>
+<ul>
+<li id="sec-1-3-3">解答3<br/>
+
+
+
+<pre class="example">cashRegister :: [Int] -&gt; Int -&gt; Int
+cashRegister valueList year = includedTax (sum valueList) year
+
+includedTax :: Int -&gt; Int -&gt; Int
+includedTax value year = value + consumptionTax value year
+
+consumptionTax :: Int -&gt; Int -&gt; Int
+consumptionTax value year = value * taxRate year `div` 100
+
+taxRate :: Int -&gt; Int
+taxRate year = if year &lt; 1989 then 0
+               else if year &lt; 1997 then 3
+               else if year &lt; 2014 then 5
+               else if year == 2014 then 8
+               else 10
+</pre>
+
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2012-06-04</p>
+<p class="author">Author: 村田 裕哉</p>
+<p class="creator">Org version 7.8.11 with Emacs version 24</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
 
 </div>
 </body>
