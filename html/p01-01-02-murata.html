@@ -101,11 +101,19 @@
 <ul>
 <li><a href="#sec-1">演習問題と解答(01)</a>
 <ul>
-<li>
-<ul>
 <li><a href="#sec-1-1">出題範囲</a></li>
-<li><a href="#sec-1-2">問題</a></li>
-<li><a href="#sec-1-3">解答例</a></li>
+<li><a href="#sec-1-2">問題</a>
+<ul>
+<li><a href="#sec-1-2-1">問題1</a></li>
+<li><a href="#sec-1-2-2">問題2</a></li>
+<li><a href="#sec-1-2-3">問題3</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-3">解答例</a>
+<ul>
+<li><a href="#sec-1-3-1">解答1</a></li>
+<li><a href="#sec-1-3-2">解答2</a></li>
+<li><a href="#sec-1-3-3">解答3</a></li>
 </ul>
 </li>
 </ul>
@@ -121,9 +129,9 @@
 
 </div>
 
-<div id="outline-container-1-1" class="outline-4">
-<h4 id="sec-1-1">出題範囲</h4>
-<div class="outline-text-4" id="text-1-1">
+<div id="outline-container-1-1" class="outline-3">
+<h3 id="sec-1-1">出題範囲</h3>
+<div class="outline-text-3" id="text-1-1">
 
 <ul>
 <li>01章 About this tutorial から
@@ -137,15 +145,20 @@
 
 </div>
 
-<div id="outline-container-1-2" class="outline-4">
-<h4 id="sec-1-2">問題</h4>
-<div class="outline-text-4" id="text-1-2">
+<div id="outline-container-1-2" class="outline-3">
+<h3 id="sec-1-2">問題</h3>
+<div class="outline-text-3" id="text-1-2">
 
-<ul>
-<li id="sec-1-2-1">問題1<br/>
-      「外税価格 <code>(Int)</code> 」と「消費税率 <code>(Int)</code> 」を引数に取り，「内税価格 <code>(Int)</code> 」を返す関数を作成せよ．
+
+</div>
+
+<div id="outline-container-1-2-1" class="outline-4">
+<h4 id="sec-1-2-1">問題1</h4>
+<div class="outline-text-4" id="text-1-2-1">
+
+<p>      「外税価格 <code>(Int)</code> 」と「消費税率 <code>(Int)</code> 」を引数に取り，「内税価格 <code>(Int)</code> 」を返す関数を作成せよ．
       ただし，小数点以下は切り捨てとする．
-
+</p>
 <p>      
       実行例:
 </p>
@@ -155,14 +168,18 @@
 525
 </pre>
 
-</li>
-</ul>
-<ul>
-<li id="sec-1-2-2">問題2<br/>
-      「外税価格 <code>(Int)</code> 」と「西暦 <code>(Int)</code> 」を引数に取り，
+</div>
+
+</div>
+
+<div id="outline-container-1-2-2" class="outline-4">
+<h4 id="sec-1-2-2">問題2</h4>
+<div class="outline-text-4" id="text-1-2-2">
+
+<p>      「外税価格 <code>(Int)</code> 」と「西暦 <code>(Int)</code> 」を引数に取り，
       「西暦に対応した内税価格 <code>(Int)</code> 」を返す関数を表１をもとに作成せよ．
       ただし，小数点以下は切り捨てとする．
-
+</p>
 <p>      
       実行例:
 </p>
@@ -188,14 +205,18 @@
 </tbody>
 </table>
 
-</li>
-</ul>
-<ul>
-<li id="sec-1-2-3">問題3<br/>
-      「外税価格 <code>(Int)</code> のリスト」と「西暦 <code>(Int)</code> 」を取り，
+</div>
+
+</div>
+
+<div id="outline-container-1-2-3" class="outline-4">
+<h4 id="sec-1-2-3">問題3</h4>
+<div class="outline-text-4" id="text-1-2-3">
+
+<p>      「外税価格 <code>(Int)</code> のリスト」と「西暦 <code>(Int)</code> 」を取り，
       「外税価格の総和に対する，西暦に対応した内税価格 <code>(Int)</code> 」を返す関数を作成せよ．
       ただし，小数点以下は切り捨てとする．
-
+</p>
 <p>
       実行例:
 </p>
@@ -205,18 +226,22 @@
 1540
 </pre>
 
-</li>
-</ul>
+</div>
 </div>
 
 </div>
 
-<div id="outline-container-1-3" class="outline-4">
-<h4 id="sec-1-3">解答例</h4>
-<div class="outline-text-4" id="text-1-3">
+<div id="outline-container-1-3" class="outline-3">
+<h3 id="sec-1-3">解答例</h3>
+<div class="outline-text-3" id="text-1-3">
 
-<ul>
-<li id="sec-1-3-1">解答1<br/>
+
+</div>
+
+<div id="outline-container-1-3-1" class="outline-4">
+<h4 id="sec-1-3-1">解答1</h4>
+<div class="outline-text-4" id="text-1-3-1">
+
 
 
 
@@ -228,10 +253,14 @@ consumptionTax rate value = value * rate `div` 100
 </pre>
 
 
-</li>
-</ul>
-<ul>
-<li id="sec-1-3-2">解答2<br/>
+</div>
+
+</div>
+
+<div id="outline-container-1-3-2" class="outline-4">
+<h4 id="sec-1-3-2">解答2</h4>
+<div class="outline-text-4" id="text-1-3-2">
+
 
 
 
@@ -249,10 +278,14 @@ taxRate year = if year &lt; 1989 then 0
                else 10
 </pre>
 
-</li>
-</ul>
-<ul>
-<li id="sec-1-3-3">解答3<br/>
+</div>
+
+</div>
+
+<div id="outline-container-1-3-3" class="outline-4">
+<h4 id="sec-1-3-3">解答3</h4>
+<div class="outline-text-4" id="text-1-3-3">
+
 
 
 
@@ -273,8 +306,8 @@ taxRate year = if year &lt; 1989 then 0
                else 10
 </pre>
 
-</li>
-</ul>
+
+</div>
 </div>
 </div>
 </div>

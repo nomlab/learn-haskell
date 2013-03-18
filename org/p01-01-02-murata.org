@@ -5,24 +5,24 @@
 #+SETUPFILE: options/default.org
 
 * 演習問題と解答(01)
-*** 出題範囲
+** 出題範囲
     + 01章 About this tutorial から
-    + 02章 Texas ranges まで
-
-*** 問題
-***** 問題1
+    + 02章 Texas ranges まで
+      
+** 問題
+*** 問題1
       「外税価格 =(Int)= 」と「消費税率 =(Int)= 」を引数に取り，「内税価格 =(Int)= 」を返す関数を作成せよ．
-      ただし，小数点以下は切り捨てとする．
+      ただし，小数点以下は切り捨てとする．
       
       実行例:
       #+BEGIN_EXAMPLE
         ghci> includedTax 500 5
         525
       #+END_EXAMPLE
-***** 問題2
+*** 問題2
       「外税価格 =(Int)= 」と「西暦 =(Int)= 」を引数に取り，
       「西暦に対応した内税価格 =(Int)= 」を返す関数を表１をもとに作成せよ．
-      ただし，小数点以下は切り捨てとする．
+      ただし，小数点以下は切り捨てとする．
       
       実行例:
       #+BEGIN_EXAMPLE
@@ -36,18 +36,18 @@
       | 1997年 〜 2013年 | 5％  |
       | 2014年           | 8％  |
       | 2015年 〜        | 10％ |
-***** 問題3
+*** 問題3
       「外税価格 =(Int)= のリスト」と「西暦 =(Int)= 」を取り，
       「外税価格の総和に対する，西暦に対応した内税価格 =(Int)= 」を返す関数を作成せよ．
-      ただし，小数点以下は切り捨てとする．
+      ただし，小数点以下は切り捨てとする．
 
       実行例:
       #+BEGIN_EXAMPLE
         ghci> cashRegister [100,300,1000] 2015
         1540
       #+END_EXAMPLE
-*** 解答例
-***** 解答1
+** 解答例
+*** 解答1
       #+BEGIN_SRC haskell
         includedTax :: Int -> Int -> Int
         includedTax rate value = value + consumptionTax rate value
@@ -56,7 +56,7 @@
         consumptionTax rate value = value * rate `div` 100
       #+END_SRC
 
-***** 解答2
+*** 解答2
       #+BEGIN_SRC haskell
         includedTax :: Int -> Int -> Int
         includedTax value year = value + consumptionTax value year
@@ -71,7 +71,7 @@
                        else if year == 2014 then 8
                        else 10
       #+END_SRC
-***** 解答3
+*** 解答3
       #+BEGIN_SRC haskell
         cashRegister :: [Int] -> Int -> Int
         cashRegister valueList year = includedTax (sum valueList) year
@@ -89,3 +89,4 @@
                        else if year == 2014 then 8
                        else 10
       #+END_SRC
+      
